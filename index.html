@@ -19,7 +19,6 @@
       color: #f3f4f6;
     }
     
-    /* Scrollbar personalizada dark */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -41,17 +40,19 @@
     }
 
     .nav-tab-active {
-      background-color: #1f2937;
-      color: #38bdf8;
-      border: 1px solid #374151;
+      background-color: #1f2937 !important;
+      color: #38bdf8 !important;
+      border: 1px solid #374151 !important;
     }
 
     .nav-tab-inactive {
-      color: #9ca3af;
+      color: #9ca3af !important;
+      background-color: transparent !important;
+      border: 1px solid transparent !important;
     }
     .nav-tab-inactive:hover {
-      background-color: #161e2e;
-      color: #e5e7eb;
+      background-color: #161e2e !important;
+      color: #e5e7eb !important;
     }
   </style>
 </head>
@@ -84,7 +85,7 @@
   </div>
 
   <!-- CONTEÚDO PRINCIPAL DO APP -->
-  <div id="appContent" class="hidden min-h-screen flex flex-col">
+  <div id="appContent" class="hidden min-h-screen flex flex-col justify-between">
     
     <!-- Top Header Navigation -->
     <header class="glass-card border-b border-gray-800/80 sticky top-0 z-50 bg-opacity-90 backdrop-blur-md">
@@ -119,21 +120,21 @@
 
         </div>
 
-        <!-- Navigation Tabs (Estilo Pill) -->
-        <div class="flex space-x-1 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
-          <button class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+        <!-- Navigation Tabs -->
+        <div class="flex space-x-2 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
+          <button id="tab-evolucao" onclick="trocarAba('evolucao')" class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evolução Médica
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-ambu" onclick="trocarAba('ambu')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Estruturação Ambu
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-exames" onclick="trocarAba('exames')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="activity" class="w-3.5 h-3.5"></i> Resumo de Exames
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-atestados" onclick="trocarAba('atestados')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestados / Laudos
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-alta" onclick="trocarAba('alta')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Alta Hospitalar
           </button>
         </div>
@@ -146,10 +147,10 @@
       <!-- Page Title -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <h2 id="pageTitle" class="text-xl font-bold text-white flex items-center gap-2">
             <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> Evolução Médica & Leitura de Fotos/PDF
           </h2>
-          <p class="text-xs text-gray-400 mt-0.5">Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização.</p>
+          <p id="pageDesc" class="text-xs text-gray-400 mt-0.5">Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização.</p>
         </div>
       </div>
 
@@ -225,33 +226,65 @@
       </div>
 
     </main>
+
+    <!-- RODAPÉ COM CONTROLE MANUAL DE API KEY (FALLBACK) -->
+    <footer class="max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 border-t border-gray-800/60 mt-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <i data-lucide="key" class="w-4 h-4 text-gray-500 shrink-0"></i>
+          <span class="shrink-0">Configuração de Chave:</span>
+          <input type="password" id="manualApiKeyInput" placeholder="Chave de API (opcional para sobrescrever)" 
+            class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-200 text-xs focus:outline-none focus:border-blue-500 font-mono w-full sm:w-80">
+        </div>
+        <span class="text-gray-500">Privado & Local</span>
+      </div>
+    </footer>
+
   </div>
 
   <script>
     lucide.createIcons();
 
     // =========================================================================
-    // CONFIGURAÇÕES DE SEGURANÇA E API:
+    // CONFIGURAÇÕES DE SEGURANÇA E CHAVE API:
     // =========================================================================
-    const PIN_CORRETO = "1995"; 
-    const API_KEY = "AQ.Ab8RN6Iw5q--lhOXK4iwI4qmruuMb-8yPQJnuwi7tp2dEEeEiA"; // <-- COLE SUA CHAVE AQUI
+    const PIN_CORRETO = "1995";
+    const API_KEY = "AQ.Ab8RN6LGHT1iJaB01HBMqy1d7LsMVA8q9AoC3_4u2heFNradGA"; // <-- Cole aqui sua chave gerada
 
+    let modoAtivo = "evolucao";
     let arquivoBase64 = null;
     let arquivoMimeType = null;
 
+    const PROMPTS_SISTEMA = {
+      evolucao: "Você é um assistente médico especialista em prontuários. Transcreva com precisão manuscritos, sinais vitais, exames ou documentos anexados. Organize, corrija a ortografia e formate tudo em uma EVOLUÇÃO MÉDICA padronizada e limpa (Plain Text). Mantenha o tom estritamente clínico e técnico.",
+      ambu: "Você é um assistente médico especialista em ambulatório. Transcreva e estruture as informações em formato de CONSULTA AMBULATORIAL (Anamnese, Queixa Principal, HDA, Antecedentes, Exame Físico, Hipóteses Diagnósticas e Conduta).",
+      exames: "Você é um assistente médico especialista em síntese clínica de exames. Monte um RESUMO CRONOLÓGICO E ORGANIZADO DE EXAMES (Laboratório, Imagem, ECG), destacando valores alterados e tendências clínicas relevantes.",
+      atestados: "Você é um assistente médico. Formate as informações para a criação de ATESTADO MÉDICO, LAUDO OU PARECER CLÍNICO, com redação formal, clara e ética.",
+      alta: "Você é um assistente médico. Crie um RESUMO DE ALTA HOSPITALAR completo contendo: Diagnósticos, Histórico da Internação, Procedimentos Realizados, Condição de Alta e Orientações/Prescrição de Alta."
+    };
+
+    const TITULOS_ABA = {
+      evolucao: { titulo: "Evolução Médica & Leitura de Fotos/PDF", desc: "Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização." },
+      ambu: { titulo: "Estruturação Ambulatorial", desc: "Estruture dados de anamnese e consultas ambulatoriais." },
+      exames: { titulo: "Resumo e Síntese de Exames", desc: "Extraia e sintetize laudos laboratoriais, de imagem ou ECG." },
+      atestados: { titulo: "Atestados, Laudos & Pareceres", desc: "Padronize a redação de atestados e pareceres técnicos." },
+      alta: { titulo: "Resumo / Sumário de Alta Hospitalar", desc: "Gere o sumário completo de alta para prontuário ou entrega ao paciente." }
+    };
+
     function verificarPin() {
-      const pinDigitado = document.getElementById("pinInput").value;
+      const inputElement = document.getElementById("pinInput");
+      const pinDigitado = inputElement.value.trim();
       const errorMsg = document.getElementById("pinError");
 
       if (pinDigitado === PIN_CORRETO) {
         document.getElementById("pinScreen").classList.add("hidden");
         document.getElementById("appContent").classList.remove("hidden");
         errorMsg.classList.add("hidden");
-        document.getElementById("pinInput").value = "";
+        inputElement.value = "";
       } else {
         errorMsg.classList.remove("hidden");
-        document.getElementById("pinInput").value = "";
-        document.getElementById("pinInput").focus();
+        inputElement.value = "";
+        inputElement.focus();
       }
     }
 
@@ -261,17 +294,37 @@
       document.getElementById("pinInput").focus();
     }
 
-    // Leitura e manipulação de arquivos (Imagens e PDFs)
+    function trocarAba(novaAba) {
+      modoAtivo = novaAba;
+      const abas = ["evolucao", "ambu", "exames", "atestados", "alta"];
+      
+      abas.forEach(aba => {
+        const btn = document.getElementById(`tab-${aba}`);
+        if (btn) {
+          if (aba === novaAba) {
+            btn.className = "nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2";
+          } else {
+            btn.className = "nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2";
+          }
+        }
+      });
+
+      const info = TITULOS_ABA[novaAba];
+      if (info) {
+        document.getElementById("pageTitle").innerHTML = `<i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> ${info.titulo}`;
+        document.getElementById("pageDesc").innerText = info.desc;
+      }
+      
+      lucide.createIcons();
+    }
+
     function manipularArquivo(file) {
       if (!file) return;
-
       arquivoMimeType = file.type;
       const reader = new FileReader();
 
       reader.onload = function(e) {
-        // Extrai apenas a string base64 sem o prefixo dataURL
         arquivoBase64 = e.target.result.split(',')[1];
-        
         document.getElementById("fileName").innerText = file.name;
         document.getElementById("filePrompt").classList.add("hidden");
         document.getElementById("filePreview").classList.remove("hidden");
@@ -300,30 +353,31 @@
       const status = document.getElementById("statusIndicator");
       const btn = document.getElementById("btnProcess");
 
+      // Prioridade para a chave digitada no rodapé (se houver); caso contrário, usa a constante do código
+      const manualKey = document.getElementById("manualApiKeyInput").value.trim();
+      const chaveFinal = manualKey || API_KEY;
+
       if (!input && !arquivoBase64) {
         alert("Por favor, cole um texto ou anexe uma foto/PDF para processar.");
         return;
       }
 
-      if (!API_KEY || API_KEY.includes("SUA_CHAVE_AQUI")) {
-        alert("Por favor, insira a sua API Key no código.");
+      if (!chaveFinal || chaveFinal.includes("SUA_NOVA_API_KEY_AQUI")) {
+        alert("Por favor, informe uma chave de API válida (no código ou no campo inferior).");
         return;
       }
 
-      // Estado de Carregamento
       btn.disabled = true;
       btn.classList.add("opacity-50", "cursor-not-allowed");
-      status.innerText = "Digitalizando e analisando com Gemini...";
+      status.innerText = "Processando com Gemini...";
       status.className = "text-xs text-blue-400 animate-pulse";
-      output.value = "Lendo imagem/documento e gerando resultado...";
+      output.value = "Gerando documento, por favor aguarde...";
 
-      const promptSystem = "Você é um assistente médico especialista em prontuários. Transcreva com precisão manuscritos, sinais vitais, exames ou documentos anexados. Organize, corrija a ortografia e formate tudo em uma Evolução Médica padronizada e limpa (Plain Text). Mantenha o tom estritamente clínico e técnico.";
-
-      // Monta as partes do conteúdo (Texto + Opcional Mídia Base64)
+      const promptSystem = PROMPTS_SISTEMA[modoAtivo];
       const parts = [];
       
       if (input) {
-        parts.push({ text: `${promptSystem}\n\nAnotações adicionais do médico:\n${input}` });
+        parts.push({ text: `${promptSystem}\n\nAnotações do médico:\n${input}` });
       } else {
         parts.push({ text: promptSystem });
       }
@@ -337,15 +391,14 @@
         });
       }
 
-      // Endpoint com modelo Gemini 2.5 Flash
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveFinal}`;
 
       try {
         const response = await fetch(url, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
-            "x-goog-api-key": API_KEY
+            "x-goog-api-key": chaveFinal
           },
           body: JSON.stringify({ contents: [{ parts: parts }] })
         });
@@ -353,7 +406,7 @@
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error?.message || `Erro de requisição (${response.status})`);
+          throw new Error(data.error?.message || `Erro HTTP (${response.status})`);
         }
 
         const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -363,7 +416,7 @@
           status.innerText = "Concluído com sucesso!";
           status.className = "text-xs text-emerald-400";
         } else {
-          throw new Error("Não foi possível extrair conteúdo da resposta da API.");
+          throw new Error("Resposta da API em formato inesperado.");
         }
       } catch (err) {
         console.error(err);
@@ -381,7 +434,6 @@
       if (!output.value) return;
 
       navigator.clipboard.writeText(output.value);
-      
       const btnCopy = document.getElementById("btnCopy");
       const originalHTML = btnCopy.innerHTML;
       
