@@ -414,7 +414,7 @@ Utilize vocabulário técnico estrito, sem suposições não documentadas.`,
       removerArquivo();
     }
 
-    async function processarDocumento() {
+async function processarDocumento() {
       const input = document.getElementById("inputText").value.trim();
       const output = document.getElementById("outputText");
       const status = document.getElementById("statusIndicator");
@@ -426,6 +426,126 @@ Utilize vocabulário técnico estrito, sem suposições não documentadas.`,
         document.getElementById("manualApiKeyInput").focus();
         return;
       }
+
+      if (!input && !arquivoBase64) {
+        alert("Por favor, cole um texto ou anexe uma foto/PDF antes de processar.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.classList.add("opacity-50", "cursor-not-allowed");
+      status.innerText = "Conectando ao modelo...";
+      status.className = "text-xs text-blue-400 animate-pulse";
+      output.value = "";
+
+      const userParts = [];
+      if (input) {
+        userParts.push({ text: `Dados brutos do paciente para formatação:\n\n${input}` });
+      }
+
+      if (arquivoBase64) {
+        userParts.push({
+          inlineData: {
+            mimeType: arquivoMimeType || "image/jpeg",
+            data: arquivoBase64
+          }
+        });
+      }
+
+      const payload = {
+        systemInstruction: {
+          parts: [{ text: INSTRUCOES_SISTEMA[modoAtivo] }]
+        },
+        contents: [
+          {
+            role: "user",
+            parts: userParts
+          }
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 4096
+        }
+      };
+
+      // Modelos prioritários: tenta o 3.6 primeiro, se saturar tenta o 2.5
+      const modelos = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-2.0-flash"];
+
+      for (let i = 0; i < modelos.length; i++) {
+        const modeloAtual = modelos[i];
+        status.innerText = `Gerando via ${modeloAtual} (tempo real)...`;
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modeloAtual}:streamGenerateContent?alt=sse&key=${encodeURIComponent(apiKey)}`;
+
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.status === 503 || response.status === 429) {
+            // Se o modelo estiver sobrecarregado, tenta o próximo da lista
+            console.warn(`Modelo ${modeloAtual} em alta demanda. Tentando alternativo...`);
+            continue;
+          }
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `Erro HTTP ${response.status}`);
+          }
+
+          // Leitura do fluxo (Streaming) em tempo real
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          let acumulado = "";
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const linhas = chunk.split("\n");
+
+            for (const linha of linhas) {
+              if (linha.startsWith("data: ")) {
+                const jsonStr = linha.replace("data: ", "").trim();
+                if (!jsonStr || jsonStr === "[DONE]") continue;
+
+                try {
+                  const parsed = JSON.parse(jsonStr);
+                  const textoChunk = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+                  if (textoChunk) {
+                    acumulado += textoChunk;
+                    output.value = acumulado;
+                    output.scrollTop = output.scrollHeight; // Rola a caixa junto com o texto
+                  }
+                } catch (e) {
+                  // ignora fragmentos de linha incompletos
+                }
+              }
+            }
+          }
+
+          status.innerText = "Concluído com sucesso!";
+          status.className = "text-xs text-emerald-400";
+          btn.disabled = false;
+          btn.classList.remove("opacity-50", "cursor-not-allowed");
+          return; // Finalizou com sucesso
+
+        } catch (err) {
+          if (i === modelos.length - 1) {
+            // Se falhou no último modelo também, exibe o erro final
+            output.value = `Falha no processamento: ${err.message}`;
+            status.innerText = "Erro de conexão";
+            status.className = "text-xs text-red-400";
+          }
+        }
+      }
+
+      btn.disabled = false;
+      btn.classList.remove("opacity-50", "cursor-not-allowed");
+    }
 
       if (!input && !arquivoBase64) {
         alert("Por favor, cole um texto ou anexe uma foto/PDF antes de processar.");
