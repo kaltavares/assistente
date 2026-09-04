@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Assistente Médico • Evolução e Prontuários</title>
   
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
@@ -53,37 +56,12 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col relative">
+<body class="min-h-screen flex flex-col justify-between">
 
-  <!-- TELA DE PIN -->
-  <div id="pinScreen" class="fixed inset-0 z-[100] bg-[#0b0f19] flex items-center justify-center p-4">
-    <div class="glass-card max-w-sm w-full p-6 rounded-2xl shadow-2xl border border-gray-800 text-center space-y-5">
-      <div class="inline-flex p-3 bg-blue-600/20 text-blue-400 rounded-full border border-blue-500/30">
-        <i data-lucide="lock" class="w-8 h-8"></i>
-      </div>
-      <div>
-        <h2 class="text-lg font-bold text-white">Assistente Médico</h2>
-        <p class="text-xs text-gray-400 mt-1">Digite seu PIN de acesso para desbloquear</p>
-      </div>
-
-      <div class="space-y-3">
-<input type="password" id="pinInput" maxlength="8" placeholder="••••" 
-  class="w-full text-center text-2xl tracking-[0.5em] bg-gray-900 text-white border border-gray-800 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-  onkeydown="if(event.key === 'Enter') verificarPin()">
-        
-        <p id="pinError" class="text-xs text-red-400 hidden">PIN incorreto. Tente novamente.</p>
-
-        <button onclick="verificarPin()" 
-          class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium py-3 rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2 text-sm">
-          <i data-lucide="key-round" class="w-4 h-4"></i> Desbloquear
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTEÚDO PRINCIPAL -->
-  <div id="appContent" class="hidden min-h-screen flex flex-col justify-between">
+  <!-- CONTEÚDO PRINCIPAL (ABRE DIRETO, SEM BLOQUEIO DE PIN) -->
+  <div id="appContent" class="flex-1 flex flex-col">
     
+    <!-- Top Header Navigation -->
     <header class="glass-card border-b border-gray-800/80 sticky top-0 z-50 bg-opacity-90 backdrop-blur-md">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
@@ -103,18 +81,13 @@
           <div class="flex items-center space-x-3">
             <span id="keyStatusBadge" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-              Chave Não Inserida
+              Chave Não Configurada
             </span>
-            
-            <button onclick="bloquearApp()" title="Bloquear Acesso"
-              class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition flex items-center gap-1.5">
-              <i data-lucide="lock" class="w-3.5 h-3.5 text-red-400"></i> Bloquear
-            </button>
           </div>
 
         </div>
 
-        <!-- Abas com navegação interativa -->
+        <!-- Abas com navegação -->
         <div class="flex space-x-2 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
           <button id="tab-evolucao" onclick="trocarAba('evolucao')" class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evolução Médica
@@ -148,7 +121,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- Painel Esquerdo -->
+        <!-- Painel de Entrada -->
         <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl space-y-4">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
@@ -160,6 +133,7 @@
               </button>
             </div>
 
+            <!-- Upload -->
             <div class="border-2 border-dashed border-gray-800 hover:border-blue-500/50 bg-gray-900/50 rounded-lg p-3 transition text-center relative">
               <input type="file" id="fileInput" accept="image/*,application/pdf" onchange="manipularArquivo(this.files[0])" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               
@@ -179,6 +153,7 @@
               </div>
             </div>
 
+            <!-- Textarea -->
             <textarea id="inputText" rows="14" 
               class="w-full bg-gray-900/90 text-gray-100 placeholder-gray-500 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition resize-none font-mono"
               placeholder="Cole aqui anotações em texto, laudos brutos ou dados do paciente..."></textarea>
@@ -190,7 +165,7 @@
           </button>
         </div>
 
-        <!-- Painel Direito -->
+        <!-- Painel de Saída -->
         <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
@@ -214,127 +189,87 @@
       </div>
 
     </main>
-
-    <!-- ÁREA DE INSERÇÃO MANUAL DE CHAVE -->
-    <footer class="max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 border-t border-gray-800/60 mt-8">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-          <div class="flex items-center gap-1.5 font-medium text-gray-300">
-            <i data-lucide="key" class="w-4 h-4 text-blue-400 shrink-0"></i>
-            <span>Google API Key:</span>
-          </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <input type="password" id="manualApiKeyInput" placeholder="Cole sua chave aqui para este terminal" 
-              class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-100 text-xs focus:outline-none focus:border-blue-500 font-mono w-full sm:w-80">
-            <button onclick="salvarChaveManual()" class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium transition shrink-0">Salvar</button>
-            <button onclick="limparChaveManual()" class="px-2.5 py-1.5 rounded bg-gray-800 hover:bg-red-500/20 hover:text-red-400 text-gray-400 transition shrink-0" title="Remover chave deste navegador">
-              <i data-lucide="trash" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        </div>
-        <span class="text-gray-500 text-[11px]">Armazenada localmente no navegador (`localStorage`).</span>
-      </div>
-    </footer>
-
   </div>
+
+  <!-- RODAPÉ COM GERENCIAMENTO DE CHAVE -->
+  <footer class="max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 border-t border-gray-800/60 mt-8">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+        <div class="flex items-center gap-1.5 font-medium text-gray-300">
+          <i data-lucide="key" class="w-4 h-4 text-blue-400 shrink-0"></i>
+          <span>Chave API Gemini:</span>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <input type="password" id="manualApiKeyInput" placeholder="Cole sua chave aqui" 
+            class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-100 text-xs focus:outline-none focus:border-blue-500 font-mono w-full sm:w-80">
+          <button onclick="salvarChaveManual()" class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium transition shrink-0">Salvar Chave</button>
+          <button onclick="limparChaveManual()" class="px-2.5 py-1.5 rounded bg-gray-800 hover:bg-red-500/20 hover:text-red-400 text-gray-400 transition shrink-0" title="Remover chave">
+            <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+      <span class="text-gray-500 text-[11px]">Chave guardada com segurança apenas no seu navegador.</span>
+    </div>
+  </footer>
 
   <script>
     lucide.createIcons();
 
-    const PIN_CORRETO = "1995";
     let modoAtivo = "evolucao";
     let arquivoBase64 = null;
     let arquivoMimeType = null;
 
-    // Prompts com formatação rigorosa de prontuário clínico
     const INSTRUCOES_SISTEMA = {
-      evolucao: `Você é um médico assistente de alta precisão técnica. Sua tarefa é transformar dados esparsos, anotações e fotos de prontuários em uma EVOLUÇÃO MÉDICA hospitalar limpa, padronizada e completa.
-Estruture rigorosamente nos seguintes blocos:
-# IDENTIFICAÇÃO E TEMPO DE INTERNAÇÃO (DIT/DPO se aplicável)
+      evolucao: `Você é um médico especialista em prontuários hospitalares. Sua tarefa é transformar dados esparsos, anotações e fotos de prontuários em uma EVOLUÇÃO MÉDICA padronizada, limpa e técnica.
+Estruture rigorosamente nos blocos:
+# IDENTIFICAÇÃO E TEMPO DE INTERNAÇÃO (DIT/DPO se houver)
 # SUBJETIVO / INTERCORRÊNCIAS DAS ÚLTIMAS 24H
 # SINAIS VITAIS (PA, FC, FR, SpO2, Temp, Diurese, Balanço Hídrico)
-# EXAME FÍSICO POR APARELHOS (Geral, Neurológico, Cardiovascular, Respiratório, Abdome, Extremidades)
-# RESUMO DE EXAMES COMPLEMENTARES RECENTES
-# LISTA DE PROBLEMAS E DIAGNÓSTICOS ATIVOS
-# CONDUTA E PLANO TERAPÊUTICO (Medicamentoso, dietético, propedêutico e metas para as próximas 24h)
-Utilize vocabulário técnico estrito, sem suposições não documentadas.`,
+# EXAME FÍSICO POR APARELHOS
+# EXAMES COMPLEMENTARES RECENTES
+# DIAGNÓSTICOS ATIVOS
+# CONDUTA E PLANO TERAPÊUTICO`,
 
-      ambu: `Você é um médico assistente em ambulatório. Estruture o texto fornecido no padrão formal de CONSULTA AMBULATORIAL:
+      ambu: `Você é um médico assistente em ambulatório. Estruture o texto fornecido no formato de CONSULTA AMBULATORIAL:
 # IDENTIFICAÇÃO
 # QUEIXA PRINCIPAL (QP)
-# HISTÓRIA DA DOENÇA ATUAL (HDA cronológica e detalhada)
-# INTERROGATÓRIO SINTOMATOLÓGICO (ISDA)
-# ANTECEDENTES PESSOAIS (Comorbidades, cirurgias, alergias, medicações em uso habitual e doses)
-# ANTECEDENTES FAMILIARES E HÁBITOS DE VIDA
+# HISTÓRIA DA DOENÇA ATUAL (HDA cronológica)
+# INTERROGATÓRIO SINTOMATOLÓGICO
+# ANTECEDENTES PESSOAIS E MEDICAÇÕES EM USO
+# ANTECEDENTES FAMILIARES
 # EXAME FÍSICO DIRECIONADO
-# HIPÓTESES DIAGNÓSTICAS (Sindrômicas e Etiológicas com CID se pertinente)
-# CONDUTA (Orientações, solicitação de exames, ajuste farmacológico e prazo de retorno)`,
+# HIPÓTESES DIAGNÓSTICAS
+# CONDUTA E PLANO DE RETORNO`,
 
-      exames: `Você é um médico especialista em síntese clínica diagnóstica. Organize todos os exames apresentados em ordem cronológica e por categorias:
-# EXAMES LABORATORIAIS (Agrupe por hemograma, função renal, eletrólitos, hepático, marcadores inflamatórios; DESTAQUE valores alterados)
-# EXAMES DE IMAGEM (Modalidade, data, laudo principal e conclusão)
-# MÉTODOS GRÁFICOS (Ex: ECG, ecocardiograma)
-# IMPRESSÃO DIAGNÓSTICA INTEGRADA (Interpretação clínica e tendências evolutivas baseadas nos resultados)`,
+      exames: `Você é um médico especialista em síntese clínica de exames. Organize cronologicamente e por categorias:
+# EXAMES LABORATORIAIS (Destaque alterações com clareza)
+# EXAMES DE IMAGEM (Laudo e conclusões)
+# MÉTODOS GRÁFICOS (ECG, etc.)
+# IMPRESSÃO DIAGNÓSTICA INTEGRADA`,
 
-      atestados: `Você é um médico elaborando documentação legal e ética. Redija com padrão formal, clareza e sem abreviações dúbias:
-# TIPO DE DOCUMENTO (Atestado Médico, Laudo Circunstanciado ou Parecer de Interconsulta)
+      atestados: `Você é um médico elaborando documentação médico-legal. Redija com formalidade e ética:
+# TIPO DE DOCUMENTO (Atestado Médico / Laudo / Parecer)
 # IDENTIFICAÇÃO DO PACIENTE
-# CORPO DO LAUDO / PARECER (Descrição técnica clara, fundamentação clínica do afastamento, aptidão ou resposta à interconsulta)
-# RECOMENDAÇÕES E PERÍODO DETERMINADO (se aplicável)
-# LOCAL, DATA E IDENTIFICAÇÃO DO PROFISSIONAL`,
+# CORPO DO TEXTO (Fundamentação clínica clara)
+# RECOMENDAÇÕES E PERÍODO
+# DATA E IDENTIFICAÇÃO PROFISSIONAL`,
 
-      alta: `Você é um médico assistente hospitalar responsável pelo sumário de desospitalização. Gere um SUMÁRIO DE ALTA COMPLETO:
-# DIAGNÓSTICOS (Motivo da internação e diagnósticos finais confirmados)
-# RESUMO DO INTERNAMENTO (Evolução clínica sucinta, desfechos de infecções, resposta a tratamentos)
-# PROCEDIMENTOS REALIZADOS (Cirurgias, punções, acessos, intubações com respectivas datas)
-# EXAMES RELEVANTES NA ALTA (Exames de controle antes da liberação)
-# CONDIÇÕES CLÍNICAS NO MOMENTO DA ALTA
-# PRESCRIÇÃO E ORIENTAÇÕES DE ALTA (Lista nominal de medicações, posologias, tempo de uso, sinais de alarme e agendamento de seguimento ambulatorial)`
+      alta: `Você é um médico assistente responsável pela alta. Gere um SUMÁRIO DE ALTA HOSPITALAR completo:
+# DIAGNÓSTICOS DA INTERNAÇÃO E FINAIS
+# RESUMO DA INTERNAÇÃO E RESPOSTA CLÍNICA
+# PROCEDIMENTOS REALIZADOS
+# EXAMES RELEVANTES NA ALTA
+# CONDIÇÕES CLÍNICAS NA ALTA
+# PRESCRIÇÃO E ORIENTAÇÕES DOMICILIARES`
     };
 
     const TITULOS_ABA = {
-      evolucao: { titulo: "Evolução Médica & Leitura de Fotos/PDF", desc: "Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização." },
+      evolucao: { titulo: "Evolução Médica & Leitura de Fotos/PDF", desc: "Cole anotações ou envie fotos de papeletas e sinais vitais manuscritos para digitalização." },
       ambu: { titulo: "Consulta Ambulatorial", desc: "Estruture anamnese completa, antecedentes, exame físico e condutas." },
       exames: { titulo: "Resumo e Síntese de Exames", desc: "Extraia e sintetize laudos laboratoriais, de imagem ou métodos gráficos." },
       atestados: { titulo: "Atestados, Laudos & Pareceres", desc: "Padronize a redação de documentos médico-legais e pareceres." },
       alta: { titulo: "Sumário de Alta Hospitalar", desc: "Gere o resumo completo de alta com prescrição e orientações domiciliares." }
     };
-
-function verificarPin() {
-      const inputElement = document.getElementById("pinInput");
-      const errorMsg = document.getElementById("pinError");
-      const pinScreen = document.getElementById("pinScreen");
-      const appContent = document.getElementById("appContent");
-
-      // Limpa qualquer espaço acidental que o teclado/navegador insira
-      const pinDigitado = (inputElement.value || "").trim().replace(/\D/g, "");
-
-      if (pinDigitado === PIN_CORRETO) {
-        if (pinScreen) pinScreen.classList.add("hidden");
-        if (appContent) appContent.classList.remove("hidden");
-        if (errorMsg) errorMsg.classList.add("hidden");
-        inputElement.value = "";
-
-        // Executa com proteção para não travar a abertura caso falhe o badge
-        try {
-          if (typeof atualizarStatusChave === "function") {
-            atualizarStatusChave();
-          }
-        } catch (e) {
-          console.warn("Aviso ao atualizar status da chave:", e);
-        }
-      } else {
-        if (errorMsg) errorMsg.classList.remove("hidden");
-        inputElement.value = "";
-        inputElement.focus();
-      }
-    }
-
-    function bloquearApp() {
-      document.getElementById("appContent").classList.add("hidden");
-      document.getElementById("pinScreen").classList.remove("hidden");
-      document.getElementById("pinInput").focus();
-    }
 
     function trocarAba(novaAba) {
       modoAtivo = novaAba;
@@ -360,23 +295,22 @@ function verificarPin() {
       lucide.createIcons();
     }
 
-    // Gestão da Chave via localStorage
     function salvarChaveManual() {
       const input = document.getElementById("manualApiKeyInput").value.trim();
       if (!input) {
-        alert("Por favor, cole sua chave de API antes de salvar.");
+        alert("Cole sua chave antes de salvar.");
         return;
       }
       localStorage.setItem("gemini_med_key", input);
       atualizarStatusChave();
-      alert("Chave salva com sucesso para este navegador!");
+      alert("Chave salva com sucesso no navegador!");
     }
 
     function limparChaveManual() {
       localStorage.removeItem("gemini_med_key");
       document.getElementById("manualApiKeyInput").value = "";
       atualizarStatusChave();
-      alert("Chave removida deste terminal.");
+      alert("Chave removida.");
     }
 
     function obterChaveAtiva() {
@@ -391,10 +325,10 @@ function verificarPin() {
       if (key) {
         input.value = key;
         badge.className = "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 gap-1.5";
-        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Chave Ativa`;
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Chave Pronta`;
       } else {
         badge.className = "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 gap-1.5";
-        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Chave Não Inserida`;
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Chave Não Configurada`;
       }
     }
 
@@ -427,7 +361,7 @@ function verificarPin() {
       removerArquivo();
     }
 
-async function processarDocumento() {
+    async function processarDocumento() {
       const input = document.getElementById("inputText").value.trim();
       const output = document.getElementById("outputText");
       const status = document.getElementById("statusIndicator");
@@ -435,21 +369,21 @@ async function processarDocumento() {
       const apiKey = obterChaveAtiva();
 
       if (!apiKey) {
-        alert("Nenhuma chave de API configurada. Cole sua chave no campo inferior e clique em Salvar.");
+        alert("Cole sua chave de API no campo no rodapé da página e clique em 'Salvar Chave'.");
         document.getElementById("manualApiKeyInput").focus();
         return;
       }
 
       if (!input && !arquivoBase64) {
-        alert("Por favor, cole um texto ou anexe uma foto/PDF antes de processar.");
+        alert("Cole um texto ou anexe uma foto antes de processar.");
         return;
       }
 
       btn.disabled = true;
       btn.classList.add("opacity-50", "cursor-not-allowed");
-      status.innerText = "Conectando ao modelo...";
+      status.innerText = "Processando...";
       status.className = "text-xs text-blue-400 animate-pulse";
-      output.value = "";
+      output.value = "Gerando documento estruturado, aguarde...";
 
       const userParts = [];
       if (input) {
@@ -481,14 +415,12 @@ async function processarDocumento() {
         }
       };
 
-      // Modelos prioritários: tenta o 3.6 primeiro, se saturar tenta o 2.5
-      const modelos = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-2.0-flash"];
+      // Tenta o modelo principal; se houver sobrecarga, faz fallback automático
+      const modelos = ["gemini-2.5-flash", "gemini-2.0-flash"];
 
       for (let i = 0; i < modelos.length; i++) {
-        const modeloAtual = modelos[i];
-        status.innerText = `Gerando via ${modeloAtual} (tempo real)...`;
-
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modeloAtual}:streamGenerateContent?alt=sse&key=${encodeURIComponent(apiKey)}`;
+        const modelo = modelos[i];
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
         try {
           const response = await fetch(url, {
@@ -497,60 +429,33 @@ async function processarDocumento() {
             body: JSON.stringify(payload)
           });
 
-          if (response.status === 503 || response.status === 429) {
-            // Se o modelo estiver sobrecarregado, tenta o próximo da lista
-            console.warn(`Modelo ${modeloAtual} em alta demanda. Tentando alternativo...`);
-            continue;
+          if ((response.status === 503 || response.status === 429) && i < modelos.length - 1) {
+            continue; // Tenta o modelo reserva se o principal estiver em alta demanda
           }
+
+          const data = await response.json();
 
           if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.error?.message || `Erro HTTP ${response.status}`);
+            throw new Error(data.error?.message || `Erro HTTP ${response.status}`);
           }
 
-          // Leitura do fluxo (Streaming) em tempo real
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder("utf-8");
-          let acumulado = "";
+          const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-
-            const chunk = decoder.decode(value, { stream: true });
-            const linhas = chunk.split("\n");
-
-            for (const linha of linhas) {
-              if (linha.startsWith("data: ")) {
-                const jsonStr = linha.replace("data: ", "").trim();
-                if (!jsonStr || jsonStr === "[DONE]") continue;
-
-                try {
-                  const parsed = JSON.parse(jsonStr);
-                  const textoChunk = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
-                  if (textoChunk) {
-                    acumulado += textoChunk;
-                    output.value = acumulado;
-                    output.scrollTop = output.scrollHeight; // Rola a caixa junto com o texto
-                  }
-                } catch (e) {
-                  // ignora fragmentos de linha incompletos
-                }
-              }
-            }
+          if (textoGerado) {
+            output.value = textoGerado;
+            status.innerText = "Concluído com sucesso!";
+            status.className = "text-xs text-emerald-400";
+            btn.disabled = false;
+            btn.classList.remove("opacity-50", "cursor-not-allowed");
+            return;
+          } else {
+            throw new Error("Formato de resposta inesperado.");
           }
-
-          status.innerText = "Concluído com sucesso!";
-          status.className = "text-xs text-emerald-400";
-          btn.disabled = false;
-          btn.classList.remove("opacity-50", "cursor-not-allowed");
-          return; // Finalizou com sucesso
 
         } catch (err) {
           if (i === modelos.length - 1) {
-            // Se falhou no último modelo também, exibe o erro final
             output.value = `Falha no processamento: ${err.message}`;
-            status.innerText = "Erro de conexão";
+            status.innerText = "Erro no processamento";
             status.className = "text-xs text-red-400";
           }
         }
@@ -558,84 +463,6 @@ async function processarDocumento() {
 
       btn.disabled = false;
       btn.classList.remove("opacity-50", "cursor-not-allowed");
-    }
-
-      if (!input && !arquivoBase64) {
-        alert("Por favor, cole um texto ou anexe uma foto/PDF antes de processar.");
-        return;
-      }
-
-      btn.disabled = true;
-      btn.classList.add("opacity-50", "cursor-not-allowed");
-      status.innerText = "Estruturando via Gemini Pro...";
-      status.className = "text-xs text-blue-400 animate-pulse";
-      output.value = "Processando os dados clínicos, aguarde...";
-
-      const userParts = [];
-      if (input) {
-        userParts.push({ text: `Dados brutos do paciente para formatação:\n\n${input}` });
-      }
-
-      if (arquivoBase64) {
-        userParts.push({
-          inlineData: {
-            mimeType: arquivoMimeType || "image/jpeg",
-            data: arquivoBase64
-          }
-        });
-      }
-
-      // Payload oficial com systemInstruction e temperature baixa para máxima precisão clínica
-      const payload = {
-        systemInstruction: {
-          parts: [{ text: INSTRUCOES_SISTEMA[modoAtivo] }]
-        },
-        contents: [
-          {
-            role: "user",
-            parts: userParts
-          }
-        ],
-        generationConfig: {
-          temperature: 0.2,
-          topP: 0.8,
-          maxOutputTokens: 4096
-        }
-      };
-
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
-
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error?.message || `Erro na requisição (${response.status})`);
-        }
-
-        const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (textoGerado) {
-          output.value = textoGerado;
-          status.innerText = "Concluído com sucesso!";
-          status.className = "text-xs text-emerald-400";
-        } else {
-          throw new Error("O modelo não retornou conteúdo legível.");
-        }
-      } catch (err) {
-        console.error(err);
-        output.value = `Falha no processamento: ${err.message}`;
-        status.innerText = "Erro no processamento";
-        status.className = "text-xs text-red-400";
-      } finally {
-        btn.disabled = false;
-        btn.classList.remove("opacity-50", "cursor-not-allowed");
-      }
     }
 
     function copiarResultado() {
@@ -656,7 +483,7 @@ async function processarDocumento() {
     }
 
     window.onload = () => {
-      document.getElementById("pinInput").focus();
+      atualizarStatusChave();
     };
   </script>
 </body>
