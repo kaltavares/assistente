@@ -293,7 +293,7 @@ Regras de processamento e formatação:
    - Parágrafos contínuos de evolução/HDA organizados em blocos legíveis.
 4. Remova quebras de linha intermediárias no meio de frases que foram inseridas incorretamente pelo sistema ou por quebra de página de PDF.
 5. Remova artefatos de rodapé/cabeçalho de página do hospital (ex: "1", "2", "Rua Betel, S/N...", "Unidade mantida com recursos públicos...").
-6. A saída deve ser gerada estritamente dentro de um bloco de código Markdown (```text ... ```) para facilitar a cópia rápida e em Plain Text (sem uso de negrito ou formatação especial dentro do bloco).`,
+6. A saída deve ser gerada estritamente dentro de um bloco de código Markdown (\`\`\`text ... \`\`\`) para facilitar a cópia rápida e em Plain Text (sem uso de negrito ou formatação especial dentro do bloco).`,
 
       exames: `FORMATO DO RESUMO DE EXAMES:
 
@@ -483,13 +483,13 @@ REGRAS DE EXECUÇÃO:
 
       btn.disabled = true;
       btn.classList.add("opacity-50", "cursor-not-allowed");
-      status.innerText = "Processando...";
+      status.innerText = "Processando com raciocínio clínico...";
       status.className = "text-xs text-blue-400 animate-pulse";
-      output.value = "Gerando documento estruturado, aguarde...";
+      output.value = "Analisando dados e estruturando o documento exato...";
 
       const userParts = [];
       if (input) {
-        userParts.push({ text: `Dados brutos do paciente para formatação:\n\n${input}` });
+        userParts.push({ text: input });
       }
 
       if (arquivoBase64) {
@@ -512,59 +512,52 @@ REGRAS DE EXECUÇÃO:
           }
         ],
         generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 4096
+          temperature: 0.5,
+          maxOutputTokens: 8192
         }
       };
 
-      // Tenta o modelo principal; se houver sobrecarga, faz fallback automático
-      const modelos = ["gemini-3.6-flash"];
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-      for (let i = 0; i < modelos.length; i++) {
-        const modelo = modelos[i];
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
-        try {
-          const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
+        const data = await response.json();
 
-          if ((response.status === 503 || response.status === 429) && i < modelos.length - 1) {
-            continue; // Tenta o modelo reserva se o principal estiver em alta demanda
-          }
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error?.message || `Erro HTTP ${response.status}`);
-          }
-
-          const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-          if (textoGerado) {
-            output.value = textoGerado;
-            status.innerText = "Concluído com sucesso!";
-            status.className = "text-xs text-emerald-400";
-            btn.disabled = false;
-            btn.classList.remove("opacity-50", "cursor-not-allowed");
-            return;
-          } else {
-            throw new Error("Formato de resposta inesperado.");
-          }
-
-        } catch (err) {
-          if (i === modelos.length - 1) {
-            output.value = `Falha no processamento: ${err.message}`;
-            status.innerText = "Erro no processamento";
-            status.className = "text-xs text-red-400";
-          }
+        if (!response.ok) {
+          throw new Error(data.error?.message || `Erro HTTP ${response.status}`);
         }
-      }
 
-      btn.disabled = false;
-      btn.classList.remove("opacity-50", "cursor-not-allowed");
+        const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (textoGerado) {
+          // Remove marcadores de bloco de código se a API envelopar a resposta
+          let textoLimpo = textoGerado;
+          if (textoLimpo.startsWith("```text\n")) {
+            textoLimpo = textoLimpo.replace(/^```text\n/, "").replace(/\n```$/, "");
+          } else if (textoLimpo.startsWith("```\n")) {
+            textoLimpo = textoLimpo.replace(/^```\n/, "").replace(/\n```$/, "");
+          }
+
+          output.value = textoLimpo;
+          status.innerText = "Concluído com sucesso!";
+          status.className = "text-xs text-emerald-400";
+        } else {
+          throw new Error("Formato de resposta inesperado.");
+        }
+
+      } catch (err) {
+        output.value = `Falha no processamento: ${err.message}`;
+        status.innerText = "Erro no processamento";
+        status.className = "text-xs text-red-400";
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove("opacity-50", "cursor-not-allowed");
+      }
     }
 
     function copiarResultado() {
