@@ -58,7 +58,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-  <!-- CONTEÚDO PRINCIPAL (ABRE DIRETO, SEM BLOQUEIO DE PIN) -->
+  <!-- CONTEÚDO PRINCIPAL (DIRETO, SEM PIN) -->
   <div id="appContent" class="flex-1 flex flex-col">
     
     <!-- Top Header Navigation -->
@@ -87,22 +87,28 @@
 
         </div>
 
-        <!-- Abas com navegação -->
+        <!-- 7 Abas de Navegação -->
         <div class="flex space-x-2 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
-          <button id="tab-evolucao" onclick="trocarAba('evolucao')" class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-evolucao" onclick="trocarAba('evolucao')" class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evolução Médica
           </button>
-          <button id="tab-ambu" onclick="trocarAba('ambu')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-            <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Consulta Ambulatorial
+          <button id="tab-ambu" onclick="trocarAba('ambu')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0">
+            <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Estruturação Ambu
           </button>
-          <button id="tab-exames" onclick="trocarAba('exames')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-exames" onclick="trocarAba('exames')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0">
             <i data-lucide="activity" class="w-3.5 h-3.5"></i> Resumo de Exames
           </button>
-          <button id="tab-atestados" onclick="trocarAba('atestados')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestado / Parecer
+          <button id="tab-atestados" onclick="trocarAba('atestados')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0">
+            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestados / Laudos
           </button>
-          <button id="tab-alta" onclick="trocarAba('alta')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-alta" onclick="trocarAba('alta')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Alta Hospitalar
+          </button>
+          <button id="tab-encaminhamento" onclick="trocarAba('encaminhamento')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i> Encaminhamento / Parecer
+          </button>
+          <button id="tab-sinais" onclick="trocarAba('sinais')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0">
+            <i data-lucide="heart-pulse" class="w-3.5 h-3.5"></i> OCR Sinais Vitais
           </button>
         </div>
       </div>
@@ -362,28 +368,122 @@ REGRAS DE EXECUÇÃO:
 
 5. Diretrizes de Linguagem:
    - Manter tom estritamente profissional e linguagem médica padronizada.
-   - Ser extremamente objetivo e direto, evitando redundâncias ou informações irrelevantes para o momento da alta.`
+   - Ser extremamente objetivo e direto, evitando redundâncias ou informações irrelevantes para o momento da alta.`,
+
+      encaminhamento: `================================================================================
+                    SOLICITAÇÃO DE [ENCAMINHAMENTO / PARECER / TRANSFERÊNCIA]
+================================================================================
+
+[CABEÇALHO DE IDENTIFICAÇÃO]
+--------------------------------------------------------------------------------
+De: [Serviço de Origem / Unidade / Especialidade / Leito]
+Para: [Serviço de Destino / Especialidade / Unidade de Saúde de Origem]
+Data: [DD/MM/AAAA]
+
+IDENTIFICAÇÃO DO PACIENTE:
+• Nome do Paciente: [Nome Completo (e Nome Social/Solteira, se aplicável)]
+• Idade: [XX] anos | Sexo: [M/F] | Estado Civil: [Estado Civil]
+• Documento/Prontuário: [Número do Prontuário ou CNS]
+• Naturalidade / Procedência: [Cidade/UF de origem e residência atual]
+• Acompanhante / Contato: [Nome e grau de parentesco do acompanhante, se relevante]
+
+
+[CORPO DO TEXTO]
+--------------------------------------------------------------------------------
+1. MOTIVO DA SOLICITAÇÃO / OBJETIVO PRINCIPAL:
+[Descrição direta e clara da razão do encaminhamento (ex.: transferência por 
+resolução de quadro cirúrgico, solicitação de avaliação especializada, 
+dispensação e acompanhamento local de medicação, etc.). Justificativa curta e 
+objetiva do porquê o serviço de destino está sendo acionado.]
+
+2. RESUMO CLÍNICO E DIAGNÓSTICOS:
+[Lista dos diagnósticos principais e comorbidades ativas (ex.: HAS, DM, Artrite 
+Reumatoide, DPOC, etc.).]
+
+3. HISTÓRICO DA DOENÇA ATUAL E EVOLUÇÃO:
+[Breve síntese do histórico do paciente, eventos agudos recentes, procedimentos 
+realizados, intervenções cirúrgicas e resposta aos tratamentos instituídos.]
+
+4. TRATAMENTO EM USO / ESQUEMA TERAPÊUTICO:
+[Relação das medicações em uso diário ou esquemas especiais (ex.: imunossupressores, 
+antimicrobianos com dia do ciclo, posologia e horários), incluindo tratamentos 
+suspensos ou com falha prévia relevante.]
+
+5. EXAME FÍSICO ATUAL E DADOS VITAIS:
+[Descrição dos sinais vitais (PA, FC, SatO2, Temp) e achados relevantes do exame 
+físico geral e segmentar (cardiovascular, respiratório, abdominal, extremidades, etc.).]
+
+6. EXAMES COMPLEMENTARES RELEVANTES:
+[Resultados recentes e significativos de laboratório (ex.: hemograma, função renal, 
+provas inflamatórias), sorologias, biópsias e exames de imagem (RX, TC, RM, ECO).]
+
+7. PLANO TERAPÊUTICO, PENDÊNCIAS E RECOMENDAÇÕES:
+[Pontos que necessitam de continuidade pelo serviço de destino, tais como:
+ - Ajuste ou conclusão de antibioticoterapia;
+ - Exames pendentes para checagem;
+ - Orientação de acompanhamento ambulatorial futuro;
+ - Necessidade de suporte interdisciplinar ou paliativo.]
+
+
+[FORMATO DA ASSINATURA]
+--------------------------------------------------------------------------------
+Coloco-me à disposição para esclarecimentos adicionais.
+
+Atenciosamente,
+
+___________________________________________________
+[Nome Completo do Médico / Profissional]
+[Especialidade / Cargo]
+CRM-[UF]: [Número do CRM]
+[Nome da Instituição / Hospital / Unidade de Saúde]`,
+
+      sinais: `Você é um assistente especialista em análise de prontuários médicos. Sua tarefa é analisar as imagens anexadas contendo os registros de sinais vitais das últimas 24 horas e gerar resumos padronizados individualizados por paciente.
+
+**Diretrizes de Identificação e Formatação:**
+
+1. Para cada imagem/paciente enviado, inicie com o nome completo extraído do cabeçalho da folha:
+   \`**PACIENTE: [Nome do Paciente]**\`
+
+2. Logo abaixo do nome, converta as informações em uma **única linha de texto**, exatamente no modelo do exemplo a seguir:
+   \`# PARÂMETROS: SAT: **90-93%** | DX: **75 MG/DL (12h)** - **190 MG/DL (18h)** | PA: 120x60/160x70 MMHG | FR: 16/17 IRPM | FC: 85-100 BPM | TEMP: 36,0 ºC (12h) - **38,0 ºC (18h)** |\`
+
+3. **Discriminação de Horários:**
+   * **Com horários:** Apenas a **Glicemia (DX)** e a **Temperatura (TEMP)** devem conter as aferições individuais acompanhadas dos seus respectivos horários.
+   * **Em faixa/variação:** Para **Saturação (SAT)**, **Pressão Arterial (PA)**, **Frequência Respiratória (FR)** e **Frequência Cardíaca (FC)**, apresente o intervalo de variação (mínimos e máximos ou sequência de variação do período).
+
+4. **Regra de Destaque para Valores Alterados (Negrito):**
+   Aplique **negrito** no valor ou na aferição específica sempre que atingir os seguintes critérios clínicos:
+   * **SAT:** Qualquer valor **< 94%**.
+   * **DX (Glicemia):** Qualquer valor **< 80 mg/dL** ou **> 180 mg/dL**.
+   * **TEMP:** Qualquer valor **≥ 37,8 ºC**.
+   * **PA, FC, FR:** Opcionalmente, caso detecte valores extremos claramente alterados (ex: PAS ≥ 140, PAD ≥ 90, FC > 100 ou < 50, FR > 20).
+
+**Regra de Segurança Médica (MUITO IMPORTANTE):**
+* Por se tratar de um prontuário médico, **não faça suposições** sobre trechos com grafia ilegível, rasurada ou ambígua.
+* Caso haja qualquer dúvida na leitura manual de um número, nome, unidade ou abreviação, insira a anotação \`[DUVIDA]\` no parâmetro correspondente e adicione a seção **\`⚠️ PONTOS DE ATENÇÃO PARA REVISÃO:\`** detalhando o campo incerto.`
     };
 
     const TITULOS_ABA = {
-      evolucao: { titulo: "Evolução Médica & Leitura de Fotos/PDF", desc: "Cole anotações ou envie fotos de papeletas e sinais vitais manuscritos para digitalização." },
-      ambu: { titulo: "Consulta Ambulatorial", desc: "Estruture anamnese completa, antecedentes, exame físico e condutas." },
-      exames: { titulo: "Resumo e Síntese de Exames", desc: "Extraia e sintetize laudos laboratoriais, de imagem ou métodos gráficos." },
-      atestados: { titulo: "Atestados, Laudos & Pareceres", desc: "Padronize a redação de documentos médico-legais e pareceres." },
-      alta: { titulo: "Sumário de Alta Hospitalar", desc: "Gere o resumo completo de alta com prescrição e orientações domiciliares." }
+      evolucao: { titulo: "Evolução Médica & Leitura de Fotos/PDF", desc: "Cole anotações ou envie fotos de papeletas e sinais vitais manuscritos para padronização." },
+      ambu: { titulo: "Estruturação Ambulatorial", desc: "Ajuste de formatação, quebras de linha e parágrafos de texto colado de prontuário." },
+      exames: { titulo: "Resumo e Síntese de Exames", desc: "Gera a linha contínua cronológica padronizada de exames laboratoriais." },
+      atestados: { titulo: "Atestados, Laudos & Relatórios HUC", desc: "Laudos padronizados, solicitações de insumos/medicamentos, curatela e relatórios do HUC/ISGH." },
+      alta: { titulo: "Sumário de Alta Hospitalar", desc: "Gere o resumo completo de alta com bloco cirúrgico destacado e orientações domiciliares." },
+      encaminhamento: { titulo: "Encaminhamento / Parecer / Transferência", desc: "Estruturação formal para transferência de setor/hospital ou solicitação de parecer especializado." },
+      sinais: { titulo: "OCR e Leitura de Sinais Vitais (24h)", desc: "Envie fotos dos registros de sinais vitais para sintetizar os parâmetros em linha única com alertas." }
     };
 
     function trocarAba(novaAba) {
       modoAtivo = novaAba;
-      const abas = ["evolucao", "ambu", "exames", "atestados", "alta"];
+      const abas = ["evolucao", "ambu", "exames", "atestados", "alta", "encaminhamento", "sinais"];
       
       abas.forEach(aba => {
         const btn = document.getElementById(`tab-${aba}`);
         if (btn) {
           if (aba === novaAba) {
-            btn.className = "nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2";
+            btn.className = "nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0";
           } else {
-            btn.className = "nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2";
+            btn.className = "nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 shrink-0";
           }
         }
       });
@@ -512,7 +612,7 @@ REGRAS DE EXECUÇÃO:
           }
         ],
         generationConfig: {
-          temperature: 0.5,
+          temperature: 0.3,
           maxOutputTokens: 8192
         }
       };
@@ -535,7 +635,6 @@ REGRAS DE EXECUÇÃO:
         const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (textoGerado) {
-          // Remove marcadores de bloco de código se a API envelopar a resposta
           let textoLimpo = textoGerado;
           if (textoLimpo.startsWith("```text\n")) {
             textoLimpo = textoLimpo.replace(/^```text\n/, "").replace(/\n```$/, "");
