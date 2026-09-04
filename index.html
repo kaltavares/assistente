@@ -182,8 +182,8 @@
             </div>
 
             <textarea id="outputText" rows="18" readonly
-              class="w-full bg-gray-900/90 text-gray-100 placeholder-gray-600 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none resize-none font-mono leading-relaxed"
-              placeholder="O documento final estruturado e padronizado aparecerá aqui..."></textarea>
+  class="w-full bg-gray-900/90 text-gray-100 placeholder-gray-600 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none resize-none font-mono leading-relaxed uppercase"
+  placeholder="O documento final estruturado e padronizado aparecerá aqui..."></textarea>
           </div>
 
           <button id="btnCopy" onclick="copiarResultado()" 
@@ -632,15 +632,19 @@ CRM-[UF]: [Número do CRM]
           throw new Error(data.error?.message || `Erro HTTP ${response.status}`);
         }
 
-        const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
+const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (textoGerado) {
           let textoLimpo = textoGerado;
-          if (textoLimpo.startsWith("```text\n")) {
-            textoLimpo = textoLimpo.replace(/^```text\n/, "").replace(/\n```$/, "");
-          } else if (textoLimpo.startsWith("```\n")) {
-            textoLimpo = textoLimpo.replace(/^```\n/, "").replace(/\n```$/, "");
-          }
+
+          // 1. Remove cercas de código (```text ou ```)
+          textoLimpo = textoLimpo.replace(/^```[a-zA-Z]*\n/g, "").replace(/\n```$/g, "");
+
+          // 2. Remove todos os asteriscos (Markdown de negrito e itálico: *, **, ***)
+          textoLimpo = textoLimpo.replace(/\*/g, "");
+
+          // 3. Converte absolutamente TUDO para CAIXA ALTA (letras maiúsculas)
+          textoLimpo = textoLimpo.toUpperCase();
 
           output.value = textoLimpo;
           status.innerText = "Concluído com sucesso!";
