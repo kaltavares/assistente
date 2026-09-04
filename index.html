@@ -55,167 +55,293 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col relative">
 
-  <!-- Top Header Navigation -->
-  <header class="glass-card border-b border-gray-800/80 sticky top-0 z-50 bg-opacity-90 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        
-        <!-- Brand & Subtitle -->
-        <div class="flex items-center space-x-3">
-          <div class="p-2 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30">
-            <i data-lucide="stethosocpe" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h1 class="text-base font-bold tracking-wide text-white flex items-center gap-2">
-              Assistente Médico <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Pro</span>
-            </h1>
-            <p class="text-xs text-gray-400">Padronizador de Evoluções e Documentos Clínicos</p>
-          </div>
-        </div>
-
-        <!-- Badges / Status Bar Top Right -->
-        <div class="hidden md:flex items-center space-x-3">
-          <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            Gemini Conectado
-          </span>
-          <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-800 text-gray-300 border border-gray-700 gap-1">
-            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-blue-400"></i> Local & Seguro
-          </span>
-        </div>
-
+  <!-- TELA DE AUTENTICAÇÃO COM PIN -->
+  <div id="pinScreen" class="fixed inset-0 z-[100] bg-[#0b0f19] flex items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full p-6 rounded-2xl shadow-2xl border border-gray-800 text-center space-y-5">
+      <div class="inline-flex p-3 bg-blue-600/20 text-blue-400 rounded-full border border-blue-500/30">
+        <i data-lucide="lock" class="w-8 h-8"></i>
       </div>
-
-      <!-- Navigation Tabs (Estilo Pill) -->
-      <div class="flex space-x-1 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
-        <button class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-          <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evolução Médica
-        </button>
-        <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-          <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Estruturação Ambu
-        </button>
-        <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-          <i data-lucide="activity" class="w-3.5 h-3.5"></i> Resumo de Exames
-        </button>
-        <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-          <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestados / Laudos
-        </button>
-        <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Alta Hospitalar
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Work Area -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-
-    <!-- Page Title / Header Info -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
-        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-          <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> Evolução Médica
-        </h2>
-        <p class="text-xs text-gray-400 mt-0.5">Cole os dados brutos ou anotações para gerar a evolução padronizada em Plain Text.</p>
+        <h2 class="text-lg font-bold text-white">Assistente Médico</h2>
+        <p class="text-xs text-gray-400 mt-1">Digite seu PIN de acesso para desbloquear</p>
+      </div>
+
+      <div class="space-y-3">
+        <input type="password" id="pinInput" maxlength="8" placeholder="••••" 
+          class="w-full text-center text-2xl tracking-[0.5em] bg-gray-900 text-white border border-gray-800 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+          onkeyup="if(event.key === 'Enter') verificarPin()">
+        
+        <p id="pinError" class="text-xs text-red-400 hidden">PIN incorreto. Tente novamente.</p>
+
+        <button onclick="verificarPin()" 
+          class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium py-3 rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2 text-sm">
+          <i data-lucide="key-round" class="w-4 h-4"></i> Desbloquear
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- Dual Workspace Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- CONTEÚDO PRINCIPAL DO APP -->
+  <div id="appContent" class="hidden min-h-screen flex flex-col">
+    
+    <!-- Top Header Navigation -->
+    <header class="glass-card border-b border-gray-800/80 sticky top-0 z-50 bg-opacity-90 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          
+          <!-- Brand & Subtitle -->
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30">
+              <i data-lucide="stethoscope" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h1 class="text-base font-bold tracking-wide text-white flex items-center gap-2">
+                Assistente Médico <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Pro</span>
+              </h1>
+              <p class="text-xs text-gray-400">Padronizador de Evoluções e OCR de Exames/Sinais</p>
+            </div>
+          </div>
 
-      <!-- Left Input Panel -->
-      <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl">
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label for="inputText" class="text-xs font-semibold uppercase tracking-wider text-gray-300 flex items-center gap-2">
-              <i data-lucide="edit-3" class="w-4 h-4 text-blue-400"></i> Dados de Entrada
-            </label>
-            <button onclick="document.getElementById('inputText').value=''" class="text-xs text-gray-400 hover:text-red-400 transition flex items-center gap-1">
-              <i data-lucide="trash-2" class="w-3 h-3"></i> Limpar
+          <!-- Badges & Lock Button Top Right -->
+          <div class="flex items-center space-x-3">
+            <span class="hidden md:inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Gemini Vision Ativo
+            </span>
+            
+            <button onclick="bloquearApp()" title="Bloquear Acesso"
+              class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition flex items-center gap-1.5">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-red-400"></i> Bloquear
             </button>
           </div>
-          
-          <textarea id="inputText" rows="18" 
-            class="w-full bg-gray-900/90 text-gray-100 placeholder-gray-500 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition resize-none font-mono"
-            placeholder="Cole aqui o texto bruto, histórico clínico, exames de laboratório ou anotações rápidas do plantão..."></textarea>
+
         </div>
 
-        <button id="btnProcess" onclick="processarTexto()" 
-          class="mt-4 w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium py-3 px-4 rounded-lg shadow-lg shadow-blue-500/10 transition duration-200 flex items-center justify-center gap-2 text-sm">
-          <i data-lucide="wand-2" class="w-4 h-4"></i> Gerar Documento Padronizado
-        </button>
+        <!-- Navigation Tabs (Estilo Pill) -->
+        <div class="flex space-x-1 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
+          <button class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evolução Médica
+          </button>
+          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+            <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Estruturação Ambu
+          </button>
+          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+            <i data-lucide="activity" class="w-3.5 h-3.5"></i> Resumo de Exames
+          </button>
+          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestados / Laudos
+          </button>
+          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Alta Hospitalar
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Work Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+      <!-- Page Title -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> Evolução Médica & Leitura de Fotos/PDF
+          </h2>
+          <p class="text-xs text-gray-400 mt-0.5">Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização.</p>
+        </div>
       </div>
 
-      <!-- Right Output Panel -->
-      <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl">
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label for="outputText" class="text-xs font-semibold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-              <i data-lucide="check-circle-2" class="w-4 h-4"></i> Resultado Formatado
-            </label>
-            <span id="statusIndicator" class="text-xs text-gray-500">Aguardando dados...</span>
+      <!-- Dual Workspace Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Left Input Panel -->
+        <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold uppercase tracking-wider text-gray-300 flex items-center gap-2">
+                <i data-lucide="edit-3" class="w-4 h-4 text-blue-400"></i> Dados de Entrada & Anexos
+              </label>
+              <button onclick="limparEntrada()" class="text-xs text-gray-400 hover:text-red-400 transition flex items-center gap-1">
+                <i data-lucide="trash-2" class="w-3 h-3"></i> Limpar Tudo
+              </button>
+            </div>
+
+            <!-- AREA DE UPLOAD DE ARQUIVOS / IMAGENS -->
+            <div class="border-2 border-dashed border-gray-800 hover:border-blue-500/50 bg-gray-900/50 rounded-lg p-3 transition text-center relative">
+              <input type="file" id="fileInput" accept="image/*,application/pdf" onchange="manipularArquivo(this.files[0])" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              
+              <div id="filePrompt" class="flex items-center justify-center gap-2 text-gray-400 text-xs">
+                <i data-lucide="image-plus" class="w-4 h-4 text-blue-400"></i>
+                <span>Anexar Foto de Papeleta, Sinais Vitais ou PDF (Clique ou Arraste)</span>
+              </div>
+
+              <!-- PRÉ-VISUALIZAÇÃO DO ARQUIVO CARREGADO -->
+              <div id="filePreview" class="hidden flex items-center justify-between bg-blue-950/40 border border-blue-800/50 px-3 py-1.5 rounded text-xs text-blue-300">
+                <div class="flex items-center gap-2 truncate">
+                  <i data-lucide="file-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                  <span id="fileName" class="truncate font-mono">imagem.jpg</span>
+                </div>
+                <button onclick="removerArquivo(event)" class="text-gray-400 hover:text-red-400 p-1">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- TEXTAREA -->
+            <textarea id="inputText" rows="14" 
+              class="w-full bg-gray-900/90 text-gray-100 placeholder-gray-500 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition resize-none font-mono"
+              placeholder="Cole aqui anotações em texto (se houver) ou deixe apenas a foto anexada acima..."></textarea>
           </div>
 
-          <textarea id="outputText" rows="18" readonly
-            class="w-full bg-gray-900/90 text-emerald-300 placeholder-gray-600 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none resize-none font-mono"
-            placeholder="O resultado formatado e estruturado aparecerá aqui..."></textarea>
+          <button id="btnProcess" onclick="processarTextoEImagem()" 
+            class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium py-3 px-4 rounded-lg shadow-lg shadow-blue-500/10 transition duration-200 flex items-center justify-center gap-2 text-sm">
+            <i data-lucide="wand-2" class="w-4 h-4"></i> Processar & Gerar Documento
+          </button>
         </div>
 
-        <button id="btnCopy" onclick="copiarResultado()" 
-          class="mt-4 w-full bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium py-3 px-4 rounded-lg border border-gray-700 transition duration-200 flex items-center justify-center gap-2 text-sm">
-          <i data-lucide="copy" class="w-4 h-4"></i> Copiar Texto Formatado
-        </button>
+        <!-- Right Output Panel -->
+        <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label for="outputText" class="text-xs font-semibold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Resultado Digitalizado / Formatado
+              </label>
+              <span id="statusIndicator" class="text-xs text-gray-500">Aguardando entrada...</span>
+            </div>
+
+            <textarea id="outputText" rows="18" readonly
+              class="w-full bg-gray-900/90 text-emerald-300 placeholder-gray-600 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none resize-none font-mono"
+              placeholder="O resultado formatado e digitalizado aparecerá aqui..."></textarea>
+          </div>
+
+          <button id="btnCopy" onclick="copiarResultado()" 
+            class="mt-4 w-full bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium py-3 px-4 rounded-lg border border-gray-700 transition duration-200 flex items-center justify-center gap-2 text-sm">
+            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Texto Formatado
+          </button>
+        </div>
+
       </div>
 
-    </div>
-
-  </main>
+    </main>
+  </div>
 
   <script>
-    // Inicializa ícones do Lucide
     lucide.createIcons();
 
     // =========================================================================
-    // COLE SUA CHAVE DO GEMINI ENTRE AS ASPAS NA LINHA ABAIXO:
+    // CONFIGURAÇÕES DE SEGURANÇA:
     // =========================================================================
-    const API_KEY = "AQ.Ab8RN6KhyQcrVrzh92FVxkC2D32QonPMH8fhTZvRnjKyFuGsmA"; 
+    const PIN_CORRETO = "1995"; // <-- DEFINA SEU PIN
+    const API_KEY = "AQ.Ab8RN6KhyQcrVrzh92FVxkC2D32QonPMH8fhTZvRnjKyFuGsmA"; // <-- SUA CHAVE API DO GEMINI
 
-    async function processarTexto() {
+    let arquivoBase64 = null;
+    let arquivoMimeType = null;
+
+    function verificarPin() {
+      const pinDigitado = document.getElementById("pinInput").value;
+      const errorMsg = document.getElementById("pinError");
+
+      if (pinDigitado === PIN_CORRETO) {
+        document.getElementById("pinScreen").classList.add("hidden");
+        document.getElementById("appContent").classList.remove("hidden");
+        errorMsg.classList.add("hidden");
+        document.getElementById("pinInput").value = "";
+      } else {
+        errorMsg.classList.remove("hidden");
+        document.getElementById("pinInput").value = "";
+        document.getElementById("pinInput").focus();
+      }
+    }
+
+    function bloquearApp() {
+      document.getElementById("appContent").classList.add("hidden");
+      document.getElementById("pinScreen").classList.remove("hidden");
+      document.getElementById("pinInput").focus();
+    }
+
+    // Leitura e manipulação de arquivos (Imagens e PDFs)
+    function manipularArquivo(file) {
+      if (!file) return;
+
+      arquivoMimeType = file.type;
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        // Extrai apenas a string base64 sem o prefixo dataURL
+        arquivoBase64 = e.target.result.split(',')[1];
+        
+        document.getElementById("fileName").innerText = file.name;
+        document.getElementById("filePrompt").classList.add("hidden");
+        document.getElementById("filePreview").classList.remove("hidden");
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function removerArquivo(e) {
+      if (e) e.stopPropagation();
+      arquivoBase64 = null;
+      arquivoMimeType = null;
+      document.getElementById("fileInput").value = "";
+      document.getElementById("filePrompt").classList.remove("hidden");
+      document.getElementById("filePreview").classList.add("hidden");
+    }
+
+    function limparEntrada() {
+      document.getElementById("inputText").value = "";
+      removerArquivo();
+    }
+
+    async function processarTextoEImagem() {
       const input = document.getElementById("inputText").value.trim();
       const output = document.getElementById("outputText");
       const status = document.getElementById("statusIndicator");
       const btn = document.getElementById("btnProcess");
 
-      if (!input) {
-        alert("Por favor, cole algum texto no campo de entrada.");
+      if (!input && !arquivoBase64) {
+        alert("Por favor, cole um texto ou anexe uma foto/PDF para processar.");
         return;
       }
 
       if (!API_KEY || API_KEY === "SUA_GEMINI_API_KEY_AQUI") {
-        alert("Por favor, substitua 'SUA_GEMINI_API_KEY_AQUI' pela sua chave real do Gemini no código.");
+        alert("Por favor, configure a sua API Key no código.");
         return;
       }
 
-      // UI Loading State
+      // Estado de Carregamento
       btn.disabled = true;
       btn.classList.add("opacity-50", "cursor-not-allowed");
-      status.innerText = "Processando com Gemini...";
+      status.innerText = "Digitalizando e analisando com Gemini...";
       status.className = "text-xs text-blue-400 animate-pulse";
-      output.value = "Gerando documento, por favor aguarde...";
+      output.value = "Lendo imagem/documento e gerando resultado...";
 
-      const promptSystem = "Você é um assistente médico especialista em prontuários. Organize, corrija a ortografia e formate as informações fornecidas em uma Evolução Médica padronizada e limpa (Plain Text). Mantenha o tom estritamente clínico e técnico.";
+      const promptSystem = "Você é um assistente médico especialista em prontuários. Transcreva com precisão manuscritos, sinais vitais, exames ou documentos anexados. Organize, corrija a ortografia e formate tudo em uma Evolução Médica padronizada e limpa (Plain Text). Mantenha o tom estritamente clínico e técnico.";
+
+      // Monta as partes do conteúdo (Texto + Opcional Mídia Base64)
+      const parts = [];
+      
+      if (input) {
+        parts.push({ text: `${promptSystem}\n\nAnotações adicionais do médico:\n${input}` });
+      } else {
+        parts.push({ text: promptSystem });
+      }
+
+      if (arquivoBase64) {
+        parts.push({
+          inline_data: {
+            mime_type: arquivoMimeType,
+            data: arquivoBase64
+          }
+        });
+      }
 
       try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{ text: `${promptSystem}\n\nTexto para organizar:\n${input}` }]
-            }]
-          })
+          body: JSON.stringify({ contents: [{ parts: parts }] })
         });
 
         const data = await response.json();
@@ -229,7 +355,7 @@
         }
       } catch (err) {
         console.error(err);
-        output.value = "Erro ao processar dados. Verifique a chave da API ou tente novamente.";
+        output.value = "Erro ao processar imagem ou texto. Verifique se o arquivo está legível e tente novamente.";
         status.innerText = "Erro no processamento";
         status.className = "text-xs text-red-400";
       } finally {
@@ -255,6 +381,10 @@
         lucide.createIcons();
       }, 2000);
     }
+
+    window.onload = () => {
+      document.getElementById("pinInput").focus();
+    };
   </script>
 </body>
 </html>
