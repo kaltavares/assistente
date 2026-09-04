@@ -67,9 +67,9 @@
       </div>
 
       <div class="space-y-3">
-        <input type="password" id="pinInput" maxlength="8" placeholder="••••" 
-          class="w-full text-center text-2xl tracking-[0.5em] bg-gray-900 text-white border border-gray-800 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-          onkeyup="if(event.key === 'Enter') verificarPin()">
+<input type="password" id="pinInput" maxlength="8" placeholder="••••" 
+  class="w-full text-center text-2xl tracking-[0.5em] bg-gray-900 text-white border border-gray-800 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+  onkeydown="if(event.key === 'Enter') verificarPin()">
         
         <p id="pinError" class="text-xs text-red-400 hidden">PIN incorreto. Tente novamente.</p>
 
@@ -300,20 +300,33 @@ Utilize vocabulário técnico estrito, sem suposições não documentadas.`,
       alta: { titulo: "Sumário de Alta Hospitalar", desc: "Gere o resumo completo de alta com prescrição e orientações domiciliares." }
     };
 
-    function verificarPin() {
-      const pinDigitado = document.getElementById("pinInput").value.trim();
+function verificarPin() {
+      const inputElement = document.getElementById("pinInput");
       const errorMsg = document.getElementById("pinError");
+      const pinScreen = document.getElementById("pinScreen");
+      const appContent = document.getElementById("appContent");
+
+      // Limpa qualquer espaço acidental que o teclado/navegador insira
+      const pinDigitado = (inputElement.value || "").trim().replace(/\D/g, "");
 
       if (pinDigitado === PIN_CORRETO) {
-        document.getElementById("pinScreen").classList.add("hidden");
-        document.getElementById("appContent").classList.remove("hidden");
-        errorMsg.classList.add("hidden");
-        document.getElementById("pinInput").value = "";
-        atualizarStatusChave();
+        if (pinScreen) pinScreen.classList.add("hidden");
+        if (appContent) appContent.classList.remove("hidden");
+        if (errorMsg) errorMsg.classList.add("hidden");
+        inputElement.value = "";
+
+        // Executa com proteção para não travar a abertura caso falhe o badge
+        try {
+          if (typeof atualizarStatusChave === "function") {
+            atualizarStatusChave();
+          }
+        } catch (e) {
+          console.warn("Aviso ao atualizar status da chave:", e);
+        }
       } else {
-        errorMsg.classList.remove("hidden");
-        document.getElementById("pinInput").value = "";
-        document.getElementById("pinInput").focus();
+        if (errorMsg) errorMsg.classList.remove("hidden");
+        inputElement.value = "";
+        inputElement.focus();
       }
     }
 
