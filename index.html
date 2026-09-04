@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Assistente Médico • Evolução e Prontuários</title>
   
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
@@ -58,7 +55,7 @@
 </head>
 <body class="min-h-screen flex flex-col relative">
 
-  <!-- TELA DE AUTENTICAÇÃO COM PIN -->
+  <!-- TELA DE PIN -->
   <div id="pinScreen" class="fixed inset-0 z-[100] bg-[#0b0f19] flex items-center justify-center p-4">
     <div class="glass-card max-w-sm w-full p-6 rounded-2xl shadow-2xl border border-gray-800 text-center space-y-5">
       <div class="inline-flex p-3 bg-blue-600/20 text-blue-400 rounded-full border border-blue-500/30">
@@ -84,15 +81,13 @@
     </div>
   </div>
 
-  <!-- CONTEÚDO PRINCIPAL DO APP -->
+  <!-- CONTEÚDO PRINCIPAL -->
   <div id="appContent" class="hidden min-h-screen flex flex-col justify-between">
     
-    <!-- Top Header Navigation -->
     <header class="glass-card border-b border-gray-800/80 sticky top-0 z-50 bg-opacity-90 backdrop-blur-md">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           
-          <!-- Brand & Subtitle -->
           <div class="flex items-center space-x-3">
             <div class="p-2 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30">
               <i data-lucide="stethoscope" class="w-6 h-6"></i>
@@ -101,15 +96,14 @@
               <h1 class="text-base font-bold tracking-wide text-white flex items-center gap-2">
                 Assistente Médico <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Pro</span>
               </h1>
-              <p class="text-xs text-gray-400">Padronizador de Evoluções e OCR de Exames/Sinais</p>
+              <p class="text-xs text-gray-400">Padronizador de Documentos Clínicos e OCR</p>
             </div>
           </div>
 
-          <!-- Badges & Lock Button Top Right -->
           <div class="flex items-center space-x-3">
-            <span class="hidden md:inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Gemini Vision Ativo
+            <span id="keyStatusBadge" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+              Chave Não Inserida
             </span>
             
             <button onclick="bloquearApp()" title="Bloquear Acesso"
@@ -120,19 +114,19 @@
 
         </div>
 
-        <!-- Navigation Tabs -->
+        <!-- Abas com navegação interativa -->
         <div class="flex space-x-2 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
           <button id="tab-evolucao" onclick="trocarAba('evolucao')" class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evolução Médica
           </button>
           <button id="tab-ambu" onclick="trocarAba('ambu')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-            <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Estruturação Ambu
+            <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Consulta Ambulatorial
           </button>
           <button id="tab-exames" onclick="trocarAba('exames')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="activity" class="w-3.5 h-3.5"></i> Resumo de Exames
           </button>
           <button id="tab-atestados" onclick="trocarAba('atestados')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
-            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestados / Laudos
+            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestado / Parecer
           </button>
           <button id="tab-alta" onclick="trocarAba('alta')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Alta Hospitalar
@@ -141,23 +135,20 @@
       </div>
     </header>
 
-    <!-- Main Work Area -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
-      <!-- Page Title -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h2 id="pageTitle" class="text-xl font-bold text-white flex items-center gap-2">
             <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> Evolução Médica & Leitura de Fotos/PDF
           </h2>
-          <p id="pageDesc" class="text-xs text-gray-400 mt-0.5">Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização.</p>
+          <p id="pageDesc" class="text-xs text-gray-400 mt-0.5">Cole anotações ou envie imagens de papeletas e sinais vitais manuscritos para padronização.</p>
         </div>
       </div>
 
-      <!-- Dual Workspace Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- Left Input Panel -->
+        <!-- Painel Esquerdo -->
         <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl space-y-4">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
@@ -169,20 +160,18 @@
               </button>
             </div>
 
-            <!-- AREA DE UPLOAD DE ARQUIVOS / IMAGENS -->
             <div class="border-2 border-dashed border-gray-800 hover:border-blue-500/50 bg-gray-900/50 rounded-lg p-3 transition text-center relative">
               <input type="file" id="fileInput" accept="image/*,application/pdf" onchange="manipularArquivo(this.files[0])" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               
               <div id="filePrompt" class="flex items-center justify-center gap-2 text-gray-400 text-xs">
                 <i data-lucide="image-plus" class="w-4 h-4 text-blue-400"></i>
-                <span>Anexar Foto de Papeleta, Sinais Vitais ou PDF (Clique ou Arraste)</span>
+                <span>Anexar Foto de Papeleta, Sinais Vitais ou Laudo (Clique ou Arraste)</span>
               </div>
 
-              <!-- PRÉ-VISUALIZAÇÃO DO ARQUIVO CARREGADO -->
               <div id="filePreview" class="hidden flex items-center justify-between bg-blue-950/40 border border-blue-800/50 px-3 py-1.5 rounded text-xs text-blue-300">
                 <div class="flex items-center gap-2 truncate">
                   <i data-lucide="file-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-                  <span id="fileName" class="truncate font-mono">imagem.jpg</span>
+                  <span id="fileName" class="truncate font-mono">arquivo</span>
                 </div>
                 <button onclick="removerArquivo(event)" class="text-gray-400 hover:text-red-400 p-1">
                   <i data-lucide="x" class="w-3.5 h-3.5"></i>
@@ -190,31 +179,30 @@
               </div>
             </div>
 
-            <!-- TEXTAREA -->
             <textarea id="inputText" rows="14" 
               class="w-full bg-gray-900/90 text-gray-100 placeholder-gray-500 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition resize-none font-mono"
-              placeholder="Cole aqui anotações em texto (se houver) ou deixe apenas a foto anexada acima..."></textarea>
+              placeholder="Cole aqui anotações em texto, laudos brutos ou dados do paciente..."></textarea>
           </div>
 
-          <button id="btnProcess" onclick="processarTextoEImagem()" 
+          <button id="btnProcess" onclick="processarDocumento()" 
             class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium py-3 px-4 rounded-lg shadow-lg shadow-blue-500/10 transition duration-200 flex items-center justify-center gap-2 text-sm">
-            <i data-lucide="wand-2" class="w-4 h-4"></i> Processar & Gerar Documento
+            <i data-lucide="wand-2" class="w-4 h-4"></i> Processar & Estruturar Documento
           </button>
         </div>
 
-        <!-- Right Output Panel -->
+        <!-- Painel Direito -->
         <div class="glass-card rounded-xl p-5 flex flex-col justify-between shadow-xl">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <label for="outputText" class="text-xs font-semibold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Resultado Digitalizado / Formatado
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Documento Clínico Estruturado
               </label>
               <span id="statusIndicator" class="text-xs text-gray-500">Aguardando entrada...</span>
             </div>
 
             <textarea id="outputText" rows="18" readonly
-              class="w-full bg-gray-900/90 text-emerald-300 placeholder-gray-600 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none resize-none font-mono"
-              placeholder="O resultado formatado e digitalizado aparecerá aqui..."></textarea>
+              class="w-full bg-gray-900/90 text-gray-100 placeholder-gray-600 border border-gray-800 rounded-lg p-3.5 text-sm focus:outline-none resize-none font-mono leading-relaxed"
+              placeholder="O documento final estruturado e padronizado aparecerá aqui..."></textarea>
           </div>
 
           <button id="btnCopy" onclick="copiarResultado()" 
@@ -227,16 +215,24 @@
 
     </main>
 
-    <!-- RODAPÉ COM CONTROLE MANUAL DE API KEY (FALLBACK) -->
+    <!-- ÁREA DE INSERÇÃO MANUAL DE CHAVE -->
     <footer class="max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 border-t border-gray-800/60 mt-8">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <i data-lucide="key" class="w-4 h-4 text-gray-500 shrink-0"></i>
-          <span class="shrink-0">Configuração de Chave:</span>
-          <input type="password" id="manualApiKeyInput" placeholder="Chave de API (opcional para sobrescrever)" 
-            class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-200 text-xs focus:outline-none focus:border-blue-500 font-mono w-full sm:w-80">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <div class="flex items-center gap-1.5 font-medium text-gray-300">
+            <i data-lucide="key" class="w-4 h-4 text-blue-400 shrink-0"></i>
+            <span>Google API Key:</span>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="password" id="manualApiKeyInput" placeholder="Cole sua chave aqui para este terminal" 
+              class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-100 text-xs focus:outline-none focus:border-blue-500 font-mono w-full sm:w-80">
+            <button onclick="salvarChaveManual()" class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium transition shrink-0">Salvar</button>
+            <button onclick="limparChaveManual()" class="px-2.5 py-1.5 rounded bg-gray-800 hover:bg-red-500/20 hover:text-red-400 text-gray-400 transition shrink-0" title="Remover chave deste navegador">
+              <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
         </div>
-        <span class="text-gray-500">Privado & Local</span>
+        <span class="text-gray-500 text-[11px]">Armazenada localmente no navegador (`localStorage`).</span>
       </div>
     </footer>
 
@@ -245,46 +241,79 @@
   <script>
     lucide.createIcons();
 
-    // =========================================================================
-    // CONFIGURAÇÕES DE SEGURANÇA E CHAVE API:
-    // =========================================================================
     const PIN_CORRETO = "1995";
-    const API_KEY = "AQ.Ab8RN6LGHT1iJaB01HBMqy1d7LsMVA8q9AoC3_4u2heFNradGA"; // <-- Cole aqui sua chave gerada
-
     let modoAtivo = "evolucao";
     let arquivoBase64 = null;
     let arquivoMimeType = null;
 
-    const PROMPTS_SISTEMA = {
-      evolucao: "Você é um assistente médico especialista em prontuários. Transcreva com precisão manuscritos, sinais vitais, exames ou documentos anexados. Organize, corrija a ortografia e formate tudo em uma EVOLUÇÃO MÉDICA padronizada e limpa (Plain Text). Mantenha o tom estritamente clínico e técnico.",
-      ambu: "Você é um assistente médico especialista em ambulatório. Transcreva e estruture as informações em formato de CONSULTA AMBULATORIAL (Anamnese, Queixa Principal, HDA, Antecedentes, Exame Físico, Hipóteses Diagnósticas e Conduta).",
-      exames: "Você é um assistente médico especialista em síntese clínica de exames. Monte um RESUMO CRONOLÓGICO E ORGANIZADO DE EXAMES (Laboratório, Imagem, ECG), destacando valores alterados e tendências clínicas relevantes.",
-      atestados: "Você é um assistente médico. Formate as informações para a criação de ATESTADO MÉDICO, LAUDO OU PARECER CLÍNICO, com redação formal, clara e ética.",
-      alta: "Você é um assistente médico. Crie um RESUMO DE ALTA HOSPITALAR completo contendo: Diagnósticos, Histórico da Internação, Procedimentos Realizados, Condição de Alta e Orientações/Prescrição de Alta."
+    // Prompts com formatação rigorosa de prontuário clínico
+    const INSTRUCOES_SISTEMA = {
+      evolucao: `Você é um médico assistente de alta precisão técnica. Sua tarefa é transformar dados esparsos, anotações e fotos de prontuários em uma EVOLUÇÃO MÉDICA hospitalar limpa, padronizada e completa.
+Estruture rigorosamente nos seguintes blocos:
+# IDENTIFICAÇÃO E TEMPO DE INTERNAÇÃO (DIT/DPO se aplicável)
+# SUBJETIVO / INTERCORRÊNCIAS DAS ÚLTIMAS 24H
+# SINAIS VITAIS (PA, FC, FR, SpO2, Temp, Diurese, Balanço Hídrico)
+# EXAME FÍSICO POR APARELHOS (Geral, Neurológico, Cardiovascular, Respiratório, Abdome, Extremidades)
+# RESUMO DE EXAMES COMPLEMENTARES RECENTES
+# LISTA DE PROBLEMAS E DIAGNÓSTICOS ATIVOS
+# CONDUTA E PLANO TERAPÊUTICO (Medicamentoso, dietético, propedêutico e metas para as próximas 24h)
+Utilize vocabulário técnico estrito, sem suposições não documentadas.`,
+
+      ambu: `Você é um médico assistente em ambulatório. Estruture o texto fornecido no padrão formal de CONSULTA AMBULATORIAL:
+# IDENTIFICAÇÃO
+# QUEIXA PRINCIPAL (QP)
+# HISTÓRIA DA DOENÇA ATUAL (HDA cronológica e detalhada)
+# INTERROGATÓRIO SINTOMATOLÓGICO (ISDA)
+# ANTECEDENTES PESSOAIS (Comorbidades, cirurgias, alergias, medicações em uso habitual e doses)
+# ANTECEDENTES FAMILIARES E HÁBITOS DE VIDA
+# EXAME FÍSICO DIRECIONADO
+# HIPÓTESES DIAGNÓSTICAS (Sindrômicas e Etiológicas com CID se pertinente)
+# CONDUTA (Orientações, solicitação de exames, ajuste farmacológico e prazo de retorno)`,
+
+      exames: `Você é um médico especialista em síntese clínica diagnóstica. Organize todos os exames apresentados em ordem cronológica e por categorias:
+# EXAMES LABORATORIAIS (Agrupe por hemograma, função renal, eletrólitos, hepático, marcadores inflamatórios; DESTAQUE valores alterados)
+# EXAMES DE IMAGEM (Modalidade, data, laudo principal e conclusão)
+# MÉTODOS GRÁFICOS (Ex: ECG, ecocardiograma)
+# IMPRESSÃO DIAGNÓSTICA INTEGRADA (Interpretação clínica e tendências evolutivas baseadas nos resultados)`,
+
+      atestados: `Você é um médico elaborando documentação legal e ética. Redija com padrão formal, clareza e sem abreviações dúbias:
+# TIPO DE DOCUMENTO (Atestado Médico, Laudo Circunstanciado ou Parecer de Interconsulta)
+# IDENTIFICAÇÃO DO PACIENTE
+# CORPO DO LAUDO / PARECER (Descrição técnica clara, fundamentação clínica do afastamento, aptidão ou resposta à interconsulta)
+# RECOMENDAÇÕES E PERÍODO DETERMINADO (se aplicável)
+# LOCAL, DATA E IDENTIFICAÇÃO DO PROFISSIONAL`,
+
+      alta: `Você é um médico assistente hospitalar responsável pelo sumário de desospitalização. Gere um SUMÁRIO DE ALTA COMPLETO:
+# DIAGNÓSTICOS (Motivo da internação e diagnósticos finais confirmados)
+# RESUMO DO INTERNAMENTO (Evolução clínica sucinta, desfechos de infecções, resposta a tratamentos)
+# PROCEDIMENTOS REALIZADOS (Cirurgias, punções, acessos, intubações com respectivas datas)
+# EXAMES RELEVANTES NA ALTA (Exames de controle antes da liberação)
+# CONDIÇÕES CLÍNICAS NO MOMENTO DA ALTA
+# PRESCRIÇÃO E ORIENTAÇÕES DE ALTA (Lista nominal de medicações, posologias, tempo de uso, sinais de alarme e agendamento de seguimento ambulatorial)`
     };
 
     const TITULOS_ABA = {
       evolucao: { titulo: "Evolução Médica & Leitura de Fotos/PDF", desc: "Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização." },
-      ambu: { titulo: "Estruturação Ambulatorial", desc: "Estruture dados de anamnese e consultas ambulatoriais." },
-      exames: { titulo: "Resumo e Síntese de Exames", desc: "Extraia e sintetize laudos laboratoriais, de imagem ou ECG." },
-      atestados: { titulo: "Atestados, Laudos & Pareceres", desc: "Padronize a redação de atestados e pareceres técnicos." },
-      alta: { titulo: "Resumo / Sumário de Alta Hospitalar", desc: "Gere o sumário completo de alta para prontuário ou entrega ao paciente." }
+      ambu: { titulo: "Consulta Ambulatorial", desc: "Estruture anamnese completa, antecedentes, exame físico e condutas." },
+      exames: { titulo: "Resumo e Síntese de Exames", desc: "Extraia e sintetize laudos laboratoriais, de imagem ou métodos gráficos." },
+      atestados: { titulo: "Atestados, Laudos & Pareceres", desc: "Padronize a redação de documentos médico-legais e pareceres." },
+      alta: { titulo: "Sumário de Alta Hospitalar", desc: "Gere o resumo completo de alta com prescrição e orientações domiciliares." }
     };
 
     function verificarPin() {
-      const inputElement = document.getElementById("pinInput");
-      const pinDigitado = inputElement.value.trim();
+      const pinDigitado = document.getElementById("pinInput").value.trim();
       const errorMsg = document.getElementById("pinError");
 
       if (pinDigitado === PIN_CORRETO) {
         document.getElementById("pinScreen").classList.add("hidden");
         document.getElementById("appContent").classList.remove("hidden");
         errorMsg.classList.add("hidden");
-        inputElement.value = "";
+        document.getElementById("pinInput").value = "";
+        atualizarStatusChave();
       } else {
         errorMsg.classList.remove("hidden");
-        inputElement.value = "";
-        inputElement.focus();
+        document.getElementById("pinInput").value = "";
+        document.getElementById("pinInput").focus();
       }
     }
 
@@ -318,6 +347,44 @@
       lucide.createIcons();
     }
 
+    // Gestão da Chave via localStorage
+    function salvarChaveManual() {
+      const input = document.getElementById("manualApiKeyInput").value.trim();
+      if (!input) {
+        alert("Por favor, cole sua chave de API antes de salvar.");
+        return;
+      }
+      localStorage.setItem("gemini_med_key", input);
+      atualizarStatusChave();
+      alert("Chave salva com sucesso para este navegador!");
+    }
+
+    function limparChaveManual() {
+      localStorage.removeItem("gemini_med_key");
+      document.getElementById("manualApiKeyInput").value = "";
+      atualizarStatusChave();
+      alert("Chave removida deste terminal.");
+    }
+
+    function obterChaveAtiva() {
+      return localStorage.getItem("gemini_med_key") || document.getElementById("manualApiKeyInput").value.trim();
+    }
+
+    function atualizarStatusChave() {
+      const key = obterChaveAtiva();
+      const badge = document.getElementById("keyStatusBadge");
+      const input = document.getElementById("manualApiKeyInput");
+
+      if (key) {
+        input.value = key;
+        badge.className = "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 gap-1.5";
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Chave Ativa`;
+      } else {
+        badge.className = "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 gap-1.5";
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Chave Não Inserida`;
+      }
+    }
+
     function manipularArquivo(file) {
       if (!file) return;
       arquivoMimeType = file.type;
@@ -347,43 +414,37 @@
       removerArquivo();
     }
 
-    async function processarTextoEImagem() {
+    async function processarDocumento() {
       const input = document.getElementById("inputText").value.trim();
       const output = document.getElementById("outputText");
       const status = document.getElementById("statusIndicator");
       const btn = document.getElementById("btnProcess");
+      const apiKey = obterChaveAtiva();
 
-      // Prioridade para a chave digitada no rodapé (se houver); caso contrário, usa a constante do código
-      const manualKey = document.getElementById("manualApiKeyInput").value.trim();
-      const chaveFinal = manualKey || API_KEY;
-
-      if (!input && !arquivoBase64) {
-        alert("Por favor, cole um texto ou anexe uma foto/PDF para processar.");
+      if (!apiKey) {
+        alert("Nenhuma chave de API configurada. Cole sua chave no campo inferior e clique em Salvar.");
+        document.getElementById("manualApiKeyInput").focus();
         return;
       }
 
-      if (!chaveFinal || chaveFinal.includes("SUA_NOVA_API_KEY_AQUI")) {
-        alert("Por favor, informe uma chave de API válida (no código ou no campo inferior).");
+      if (!input && !arquivoBase64) {
+        alert("Por favor, cole um texto ou anexe uma foto/PDF antes de processar.");
         return;
       }
 
       btn.disabled = true;
       btn.classList.add("opacity-50", "cursor-not-allowed");
-      status.innerText = "Processando com Gemini...";
+      status.innerText = "Estruturando via Gemini Pro...";
       status.className = "text-xs text-blue-400 animate-pulse";
-      output.value = "Gerando documento, por favor aguarde...";
+      output.value = "Processando os dados clínicos, aguarde...";
 
-      const promptSystem = PROMPTS_SISTEMA[modoAtivo];
-      const parts = [];
-      
+      const userParts = [];
       if (input) {
-        parts.push({ text: `${promptSystem}\n\nAnotações do médico:\n${input}` });
-      } else {
-        parts.push({ text: promptSystem });
+        userParts.push({ text: `Dados brutos do paciente para formatação:\n\n${input}` });
       }
 
       if (arquivoBase64) {
-        parts.push({
+        userParts.push({
           inlineData: {
             mimeType: arquivoMimeType || "image/jpeg",
             data: arquivoBase64
@@ -391,32 +452,47 @@
         });
       }
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${chaveFinal}`;
-      
+      // Payload oficial com systemInstruction e temperature baixa para máxima precisão clínica
+      const payload = {
+        systemInstruction: {
+          parts: [{ text: INSTRUCOES_SISTEMA[modoAtivo] }]
+        },
+        contents: [
+          {
+            role: "user",
+            parts: userParts
+          }
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          topP: 0.8,
+          maxOutputTokens: 4096
+        }
+      };
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+
       try {
         const response = await fetch(url, {
           method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "x-goog-api-key": chaveFinal
-          },
-          body: JSON.stringify({ contents: [{ parts: parts }] })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error?.message || `Erro HTTP (${response.status})`);
+          throw new Error(data.error?.message || `Erro na requisição (${response.status})`);
         }
 
-        const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const textoGerado = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        if (resultText) {
-          output.value = resultText;
+        if (textoGerado) {
+          output.value = textoGerado;
           status.innerText = "Concluído com sucesso!";
           status.className = "text-xs text-emerald-400";
         } else {
-          throw new Error("Resposta da API em formato inesperado.");
+          throw new Error("O modelo não retornou conteúdo legível.");
         }
       } catch (err) {
         console.error(err);
