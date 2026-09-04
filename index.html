@@ -69,7 +69,7 @@
       </div>
 
       <div class="space-y-3">
-        <input type="password" id="pinInput" maxlength="8" placeholder="••••" 
+        <input type="password" id="pinInput" placeholder="••••" 
           class="w-full text-center text-2xl tracking-[0.5em] bg-gray-900 text-white border border-gray-800 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
           onkeyup="if(event.key === 'Enter') verificarPin()">
         
@@ -233,8 +233,8 @@
     // =========================================================================
     // CONFIGURAÇÕES DE SEGURANÇA E CHAVE API:
     // =========================================================================
-    const PIN_CORRETO = "1995"; // <-- SEU PIN DE ACESSO
-    const API_KEY = "AQ.Ab8RN6KhyQcrVrzh92FVxkC2D32QonPMH8fhTZvRnjKyFuGsmA"; // <-- COLE SUA CHAVE DO GEMINI AQUI
+    const PIN_CORRETO = "1995";
+    const API_KEY = "AQ.Ab8RN6KhyQcrVrzh92FVxkC2D32QonPMH8fhTZvRnjKyFuGsmA"; 
 
     let modoAtivo = "evolucao";
     let arquivoBase64 = null;
@@ -257,18 +257,19 @@
     };
 
     function verificarPin() {
-      const pinDigitado = document.getElementById("pinInput").value;
+      const inputElement = document.getElementById("pinInput");
+      const pinDigitado = inputElement.value.trim();
       const errorMsg = document.getElementById("pinError");
 
       if (pinDigitado === PIN_CORRETO) {
         document.getElementById("pinScreen").classList.add("hidden");
         document.getElementById("appContent").classList.remove("hidden");
         errorMsg.classList.add("hidden");
-        document.getElementById("pinInput").value = "";
+        inputElement.value = "";
       } else {
         errorMsg.classList.remove("hidden");
-        document.getElementById("pinInput").value = "";
-        document.getElementById("pinInput").focus();
+        inputElement.value = "";
+        inputElement.focus();
       }
     }
 
@@ -300,7 +301,6 @@
 
     function manipularArquivo(file) {
       if (!file) return;
-
       arquivoMimeType = file.type;
       const reader = new FileReader();
 
@@ -329,77 +329,20 @@
     }
 
     async function processarTextoEImagem() {
-  const input = document.getElementById("inputText").value.trim();
-  const output = document.getElementById("outputText");
-  const status = document.getElementById("statusIndicator");
-  const btn = document.getElementById("btnProcess");
+      const input = document.getElementById("inputText").value.trim();
+      const output = document.getElementById("outputText");
+      const status = document.getElementById("statusIndicator");
+      const btn = document.getElementById("btnProcess");
 
-  if (!input && !arquivoBase64) {
-    alert("Por favor, cole um texto ou anexe uma foto/PDF para processar.");
-    return;
-  }
-
-  if (!API_KEY || API_KEY === "SUA_GEMINI_API_KEY_AQUI") {
-    alert("Por favor, insira uma API Key válida do Gemini no código.");
-    return;
-  }
-
-  btn.disabled = true;
-  btn.classList.add("opacity-50", "cursor-not-allowed");
-  status.innerText = "Processando com Gemini...";
-  status.className = "text-xs text-blue-400 animate-pulse";
-  output.value = "Gerando documento, por favor aguarde...";
-
-  const promptSystem = PROMPTS_SISTEMA[modoAtivo];
-  const parts = [];
-  
-  if (input) {
-    parts.push({ text: `${promptSystem}\n\nAnotações do médico:\n${input}` });
-  } else {
-    parts.push({ text: promptSystem });
-  }
-
-  if (arquivoBase64) {
-    parts.push({
-      inline_data: {
-        mime_type: arquivoMimeType,
-        data: arquivoBase64
+      if (!input && !arquivoBase64) {
+        alert("Por favor, cole um texto ou anexe uma foto/PDF para processar.");
+        return;
       }
-    });
-  }
 
-  try {
-    // Usando gemini-2.5-flash e v1beta
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: parts }] })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Erro retornado pela API do Gemini:", data);
-      throw new Error(data.error?.message || "Erro na resposta da API");
-    }
-
-    if (data.candidates && data.candidates[0].content.parts[0].text) {
-      output.value = data.candidates[0].content.parts[0].text;
-      status.innerText = "Concluído com sucesso!";
-      status.className = "text-xs text-emerald-400";
-    } else {
-      throw new Error("Formato de resposta inesperado");
-    }
-  } catch (err) {
-    console.error("Detalhes do erro:", err);
-    output.value = `Erro no processamento: ${err.message}\n\nAbra o Console do navegador (F12) para ver detalhes.`;
-    status.innerText = "Erro no processamento";
-    status.className = "text-xs text-red-400";
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove("opacity-50", "cursor-not-allowed");
-  }
-}
+      if (!API_KEY || API_KEY === "SUA_GEMINI_API_KEY_AQUI") {
+        alert("Por favor, cole sua chave de API do Gemini no código.");
+        return;
+      }
 
       btn.disabled = true;
       btn.classList.add("opacity-50", "cursor-not-allowed");
@@ -426,7 +369,7 @@
       }
 
       try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contents: [{ parts: parts }] })
@@ -434,16 +377,20 @@
 
         const data = await response.json();
 
+        if (!response.ok) {
+          throw new Error(data.error?.message || "Erro na comunicação com a API");
+        }
+
         if (data.candidates && data.candidates[0].content.parts[0].text) {
           output.value = data.candidates[0].content.parts[0].text;
           status.innerText = "Concluído com sucesso!";
           status.className = "text-xs text-emerald-400";
         } else {
-          throw new Error("Resposta inválida da API");
+          throw new Error("Formato de resposta inesperado da API.");
         }
       } catch (err) {
         console.error(err);
-        output.value = "Erro ao processar dados. Tente novamente.";
+        output.value = `Falha no processamento: ${err.message}`;
         status.innerText = "Erro no processamento";
         status.className = "text-xs text-red-400";
       } finally {
@@ -457,7 +404,6 @@
       if (!output.value) return;
 
       navigator.clipboard.writeText(output.value);
-      
       const btnCopy = document.getElementById("btnCopy");
       const originalHTML = btnCopy.innerHTML;
       
