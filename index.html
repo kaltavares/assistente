@@ -119,21 +119,21 @@
 
         </div>
 
-        <!-- Navigation Tabs (Estilo Pill) -->
+        <!-- Navigation Tabs -->
         <div class="flex space-x-1 py-2 overflow-x-auto no-scrollbar border-t border-gray-800/50">
-          <button class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-evolucao" onclick="trocarAba('evolucao')" class="nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evolução Médica
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-ambu" onclick="trocarAba('ambu')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Estruturação Ambu
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-exames" onclick="trocarAba('exames')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="activity" class="w-3.5 h-3.5"></i> Resumo de Exames
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-atestados" onclick="trocarAba('atestados')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Atestados / Laudos
           </button>
-          <button class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+          <button id="tab-alta" onclick="trocarAba('alta')" class="nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Alta Hospitalar
           </button>
         </div>
@@ -146,10 +146,10 @@
       <!-- Page Title -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <h2 id="pageTitle" class="text-xl font-bold text-white flex items-center gap-2">
             <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> Evolução Médica & Leitura de Fotos/PDF
           </h2>
-          <p class="text-xs text-gray-400 mt-0.5">Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização.</p>
+          <p id="pageDesc" class="text-xs text-gray-400 mt-0.5">Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização.</p>
         </div>
       </div>
 
@@ -231,13 +231,30 @@
     lucide.createIcons();
 
     // =========================================================================
-    // CONFIGURAÇÕES DE SEGURANÇA:
+    // CONFIGURAÇÕES DE SEGURANÇA E CHAVE API:
     // =========================================================================
-    const PIN_CORRETO = "1995"; // <-- DEFINA SEU PIN
-    const API_KEY = "AQ.Ab8RN6KhyQcrVrzh92FVxkC2D32QonPMH8fhTZvRnjKyFuGsmA"; // <-- SUA CHAVE API DO GEMINI
+    const PIN_CORRETO = "1995"; // <-- SEU PIN DE ACESSO
+    const API_KEY = "AQ.Ab8RN6KhyQcrVrzh92FVxkC2D32QonPMH8fhTZvRnjKyFuGsmA"; // <-- COLE SUA CHAVE DO GEMINI AQUI
 
+    let modoAtivo = "evolucao";
     let arquivoBase64 = null;
     let arquivoMimeType = null;
+
+    const PROMPTS_SISTEMA = {
+      evolucao: "Você é um assistente médico especialista em prontuários. Transcreva com precisão manuscritos, sinais vitais, exames ou documentos. Organize, corrija a ortografia e formate tudo em uma EVOLUÇÃO MÉDICA padronizada e limpa (Plain Text). Mantenha tom estritamente clínico e técnico.",
+      ambu: "Você é um assistente médico especialista em ambulatório. Transcreva e estruture as informações em formato de CONSULTA AMBULATORIAL (Anamnese, Queixa Principal, HDA, Antecedentes, Exame Físico, Hipóteses e Conduta).",
+      exames: "Você é um assistente médico especialista em análise e síntese de laudos. Monte um RESUMO CRONOLÓGICO E ORGANIZADO DE EXAMES (Laboratório, Imagem e Eletrocardiograma), destacando valores alterados e tendências relevantes.",
+      atestados: "Você é um assistente médico. Formate as informações para a criação de ATESTADO MÉDICO, LAUDO OU PARECER CLÍNICO, mantendo tom formal, claro e estruturado segundo padrões éticos médicos.",
+      alta: "Você é um assistente médico. Crie um RESUMO DE ALTA HOSPITALAR completo contendo: Diagnósticos de Internação/Final, Resumo do Internamento, Procedimentos Realizados, Condição de Alta e Orientações/Prescrição de Alta."
+    };
+
+    const TITULOS_ABA = {
+      evolucao: { titulo: "Evolução Médica & Leitura de Fotos/PDF", desc: "Cole textos ou envie fotos de papeletas, sinais vitais manuscritos e laudos para digitalização." },
+      ambu: { titulo: "Estruturação Ambulatorial", desc: "Estruture dados de anamnese e consultas ambulatoriais." },
+      exames: { titulo: "Resumo e Síntese de Exames", desc: "Extraia e sintetize laudos laboratoriais, de imagem ou ECG." },
+      atestados: { titulo: "Atestados, Laudos & Pareceres", desc: "Padronize a redação de atestados e laudos técnicos." },
+      alta: { titulo: "Resumo / Sumário de Alta Hospitalar", desc: "Gere o documento completo de alta para entrega ao paciente ou prontuário." }
+    };
 
     function verificarPin() {
       const pinDigitado = document.getElementById("pinInput").value;
@@ -261,7 +278,26 @@
       document.getElementById("pinInput").focus();
     }
 
-    // Leitura e manipulação de arquivos (Imagens e PDFs)
+    function trocarAba(novaAba) {
+      modoAtivo = novaAba;
+      const abas = ["evolucao", "ambu", "exames", "atestados", "alta"];
+      
+      abas.forEach(aba => {
+        const btn = document.getElementById(`tab-${aba}`);
+        if (aba === novaAba) {
+          btn.className = "nav-tab-active px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2";
+        } else {
+          btn.className = "nav-tab-inactive px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2";
+        }
+      });
+
+      const info = TITULOS_ABA[novaAba];
+      document.getElementById("pageTitle").innerHTML = `<i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> ${info.titulo}`;
+      document.getElementById("pageDesc").innerText = info.desc;
+      
+      lucide.createIcons();
+    }
+
     function manipularArquivo(file) {
       if (!file) return;
 
@@ -269,9 +305,7 @@
       const reader = new FileReader();
 
       reader.onload = function(e) {
-        // Extrai apenas a string base64 sem o prefixo dataURL
         arquivoBase64 = e.target.result.split(',')[1];
-        
         document.getElementById("fileName").innerText = file.name;
         document.getElementById("filePrompt").classList.add("hidden");
         document.getElementById("filePreview").classList.remove("hidden");
@@ -310,20 +344,17 @@
         return;
       }
 
-      // Estado de Carregamento
       btn.disabled = true;
       btn.classList.add("opacity-50", "cursor-not-allowed");
-      status.innerText = "Digitalizando e analisando com Gemini...";
+      status.innerText = "Processando com Gemini...";
       status.className = "text-xs text-blue-400 animate-pulse";
-      output.value = "Lendo imagem/documento e gerando resultado...";
+      output.value = "Gerando documento, por favor aguarde...";
 
-      const promptSystem = "Você é um assistente médico especialista em prontuários. Transcreva com precisão manuscritos, sinais vitais, exames ou documentos anexados. Organize, corrija a ortografia e formate tudo em uma Evolução Médica padronizada e limpa (Plain Text). Mantenha o tom estritamente clínico e técnico.";
-
-      // Monta as partes do conteúdo (Texto + Opcional Mídia Base64)
+      const promptSystem = PROMPTS_SISTEMA[modoAtivo];
       const parts = [];
       
       if (input) {
-        parts.push({ text: `${promptSystem}\n\nAnotações adicionais do médico:\n${input}` });
+        parts.push({ text: `${promptSystem}\n\nAnotações do médico:\n${input}` });
       } else {
         parts.push({ text: promptSystem });
       }
@@ -355,7 +386,7 @@
         }
       } catch (err) {
         console.error(err);
-        output.value = "Erro ao processar imagem ou texto. Verifique se o arquivo está legível e tente novamente.";
+        output.value = "Erro ao processar dados. Tente novamente.";
         status.innerText = "Erro no processamento";
         status.className = "text-xs text-red-400";
       } finally {
